@@ -13,10 +13,15 @@ describe("Supabase Types", () => {
       is_occupied: true,
       material_status: "negotiable",
       urgency: "few_days",
+      urgency_custom: null,
+      completion_time: "1-2_hours",
+      completion_time_custom: null,
       active_days: 3,
+      currency: "MKD",
       budget_min: 1000,
       budget_max: 5000,
       image_urls: ["https://example.com/photo.jpg"],
+      owner_id: null,
       created_at: "2026-01-01T00:00:00Z",
     };
     expect(job.id).toBe("uuid-1");
@@ -38,10 +43,15 @@ describe("Supabase Types", () => {
       is_occupied: false,
       material_status: "buyer_provides",
       urgency: "flexible",
+      urgency_custom: null,
+      completion_time: "3+_days",
+      completion_time_custom: null,
       active_days: 7,
+      currency: "EUR",
       budget_min: 2000,
       budget_max: 10000,
       image_urls: [],
+      owner_id: null,
       created_at: "2026-02-01T00:00:00Z",
     };
     expect(job.property_type).toBe("house");
@@ -88,13 +98,17 @@ describe("Supabase Types", () => {
             Row: {} as Job,
             Insert: {} as Omit<Job, "id" | "created_at">,
             Update: {} as Partial<Omit<Job, "id" | "created_at">>,
+            Relationships: [],
           },
           bids: {
             Row: {} as Bid,
             Insert: {} as Omit<Bid, "id" | "created_at">,
             Update: {} as Partial<Omit<Bid, "id" | "created_at">>,
+            Relationships: [],
           },
         },
+        Views: {},
+        Functions: {},
       },
     };
     expect(db.public.Tables.jobs).toBeDefined();

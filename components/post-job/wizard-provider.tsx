@@ -55,7 +55,15 @@ export function PostJobWizard() {
 
     try {
       const supabase = createClient();
-      const { error } = await supabase.from("jobs").insert({
+      const { data: userData, error: userError } = await supabase.auth.getUser();
+
+      if (userError || !userData?.user) {
+        setSubmitError("Мора да бидете најавени за да објавите работа.");
+        setIsSubmitting(false);
+        return;
+      }
+
+      const { error } = await (supabase.from("jobs") as any).insert({
         description: parsed.data.description,
         city: parsed.data.city,
         neighborhood: parsed.data.neighborhood,
@@ -73,7 +81,7 @@ export function PostJobWizard() {
         budget_min: parsed.data.budget_min,
         budget_max: parsed.data.budget_max,
         image_urls: parsed.data.images ?? [],
-        owner_id: null,
+        owner_id: userData.user.id,
       });
 
       if (error) {

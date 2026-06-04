@@ -38,19 +38,23 @@ export interface Bid {
   created_at: string;
 }
 
-export interface Database {
+export type Database = {
   public: {
     Tables: {
       jobs: {
         Row: Job;
         Insert: Omit<Job, "id" | "created_at">;
         Update: Partial<Omit<Job, "id" | "created_at">>;
+        Relationships: [];
       };
       bids: {
         Row: Bid;
         Insert: Omit<Bid, "id" | "created_at">;
         Update: Partial<Omit<Bid, "id" | "created_at">>;
+        Relationships: [];
       };
     };
+    Views: Record<string, never>;
+    Functions: Record<string, never>;
   };
-}
+};

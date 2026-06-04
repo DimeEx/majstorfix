@@ -18,10 +18,12 @@ describe("Database Migration", () => {
     expect(sql).toContain("DOWN");
   });
 
-  it("creates all three enum types", () => {
+  it("creates all enum types", () => {
     expect(sql).toContain("CREATE TYPE property_enum AS ENUM");
     expect(sql).toContain("CREATE TYPE material_enum AS ENUM");
     expect(sql).toContain("CREATE TYPE urgency_enum AS ENUM");
+    expect(sql).toContain("CREATE TYPE completion_time_enum AS ENUM");
+    expect(sql).toContain("CREATE TYPE currency_enum AS ENUM");
   });
 
   it("creates jobs table with required columns", () => {

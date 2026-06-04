@@ -8,7 +8,9 @@
 -- Create Enum Types for cleaner state management
 CREATE TYPE property_enum AS ENUM ('house', 'apartment');
 CREATE TYPE material_enum AS ENUM ('buyer_provides', 'handyman_provides', 'negotiable');
-CREATE TYPE urgency_enum AS ENUM ('emergency', 'few_days', 'flexible');
+CREATE TYPE urgency_enum AS ENUM ('emergency', 'few_days', 'flexible', 'custom');
+CREATE TYPE completion_time_enum AS ENUM ('1-2_hours', '3-4_hours', '5-8_hours', '1-2_days', '3+_days', 'custom');
+CREATE TYPE currency_enum AS ENUM ('MKD', 'EUR');
 
 -- 1. Create the Main Jobs Table
 CREATE TABLE jobs (
@@ -22,7 +24,11 @@ CREATE TABLE jobs (
     is_occupied BOOLEAN DEFAULT TRUE,
     material_status material_enum NOT NULL,
     urgency urgency_enum NOT NULL,
+    urgency_custom TEXT DEFAULT NULL,
+    completion_time completion_time_enum NOT NULL,
+    completion_time_custom TEXT DEFAULT NULL,
     active_days INT NOT NULL DEFAULT 3,
+    currency currency_enum NOT NULL DEFAULT 'MKD',
     budget_min INT NOT NULL,
     budget_max INT NOT NULL,
     image_urls TEXT[] NOT NULL,
@@ -88,6 +94,8 @@ CREATE POLICY "Authenticated users can create bids"
 -- DROP POLICY IF EXISTS "Authenticated users can create bids" ON bids;
 -- DROP TABLE IF EXISTS bids;
 -- DROP TABLE IF EXISTS jobs;
+-- DROP TYPE IF EXISTS currency_enum;
+-- DROP TYPE IF EXISTS completion_time_enum;
 -- DROP TYPE IF EXISTS urgency_enum;
 -- DROP TYPE IF EXISTS material_enum;
 -- DROP TYPE IF EXISTS property_enum;
