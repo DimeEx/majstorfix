@@ -8,7 +8,7 @@ export const stepGeneralInfoSchema = z.object({
   city: z.string().min(1, "Градот е задолжителен"),
   neighborhood: z.string().min(1, "Населбата е задолжителна"),
   description: z.string().min(10, "Опишете го проблемот подетално (мин. 10 карактери)"),
-  images: z.array(z.string()).min(1, "Задолжително прикачете барем една слика"),
+  images: z.array(z.string()).optional(),
 });
 
 export const stepPropertyTraitsSchema = z.object({
@@ -18,9 +18,20 @@ export const stepPropertyTraitsSchema = z.object({
   is_occupied: z.boolean(),
 });
 
+export const completionTimeEnum = z.enum([
+  "1-2_hours",
+  "3-4_hours",
+  "5-8_hours",
+  "1-2_days",
+  "3+_days",
+  "custom",
+]);
+
 export const stepLogisticsSchema = z.object({
   material_status: materialStatusEnum,
   urgency: urgencyEnum,
+  completion_time: completionTimeEnum,
+  completion_time_custom: z.string().optional(),
   active_days: z.coerce.number<number>().int().refine(
     (val) => [1, 3, 7].includes(val),
     { message: "Изберете валиден период на истекување" }
@@ -32,6 +43,12 @@ export const stepLogisticsSchema = z.object({
   {
     message: "Максималниот буџет мора да биде поголем или еднаков на минималниот",
     path: ["budget_max"],
+  }
+).refine(
+  (data) => data.completion_time !== "custom" || (data.completion_time_custom && data.completion_time_custom.length > 0),
+  {
+    message: "Внесете прилагодено време",
+    path: ["completion_time_custom"],
   }
 );
 

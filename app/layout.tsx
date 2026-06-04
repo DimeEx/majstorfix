@@ -1,17 +1,19 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { DM_Serif_Display, DM_Sans } from "next/font/google";
 import { Navbar } from "@/components/shared/navbar";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const fontSerif = DM_Serif_Display({
+  variable: "--font-serif",
   subsets: ["latin"],
+  weight: "400",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const fontSans = DM_Sans({
+  variable: "--font-sans",
   subsets: ["latin"],
+  weight: ["400", "500", "700"],
 });
 
 export const metadata: Metadata = {
@@ -27,11 +29,14 @@ export default function RootLayout({
   return (
     <html
       lang="mk"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${fontSerif.variable} ${fontSans.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
+        <div className="bg-warm-glow fixed inset-0 pointer-events-none" />
+        <div className="bg-geo-pattern fixed inset-0 pointer-events-none" />
+        <div className="bg-noise fixed inset-0 pointer-events-none" />
         <Navbar />
-        <main className="flex-1">{children}</main>
+        <main className="flex-1 relative">{children}</main>
         <Toaster />
       </body>
     </html>
