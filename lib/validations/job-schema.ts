@@ -2,7 +2,16 @@ import { z } from "zod";
 
 export const propertyTypeEnum = z.enum(["house", "apartment"]);
 export const materialStatusEnum = z.enum(["buyer_provides", "handyman_provides", "negotiable"]);
-export const urgencyEnum = z.enum(["emergency", "few_days", "flexible"]);
+export const urgencyEnum = z.enum(["emergency", "few_days", "flexible", "custom"]);
+export const completionTimeEnum = z.enum([
+  "1-2_hours",
+  "3-4_hours",
+  "5-8_hours",
+  "1-2_days",
+  "3+_days",
+  "custom",
+]);
+export const currencyEnum = z.enum(["MKD", "EUR"]);
 
 export const stepGeneralInfoSchema = z.object({
   city: z.string().min(1, "Градот е задолжителен"),
@@ -18,24 +27,17 @@ export const stepPropertyTraitsSchema = z.object({
   is_occupied: z.boolean(),
 });
 
-export const completionTimeEnum = z.enum([
-  "1-2_hours",
-  "3-4_hours",
-  "5-8_hours",
-  "1-2_days",
-  "3+_days",
-  "custom",
-]);
-
 export const stepLogisticsSchema = z.object({
   material_status: materialStatusEnum,
   urgency: urgencyEnum,
+  urgency_custom: z.string().optional(),
   completion_time: completionTimeEnum,
   completion_time_custom: z.string().optional(),
   active_days: z.coerce.number<number>().int().refine(
     (val) => [1, 3, 7].includes(val),
     { message: "Изберете валиден период на истекување" }
   ),
+  currency: currencyEnum,
   budget_min: z.coerce.number<number>().int().min(1, "Внесете минимален буџет"),
   budget_max: z.coerce.number<number>().int().min(1, "Внесете максимален буџет"),
 }).refine(
@@ -49,6 +51,12 @@ export const stepLogisticsSchema = z.object({
   {
     message: "Внесете прилагодено време",
     path: ["completion_time_custom"],
+  }
+).refine(
+  (data) => data.urgency !== "custom" || (data.urgency_custom && data.urgency_custom.length > 0),
+  {
+    message: "Внесете прилагодена итност",
+    path: ["urgency_custom"],
   }
 );
 

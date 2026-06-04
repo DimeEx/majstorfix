@@ -3,7 +3,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { stepPropertyTraitsSchema } from "@/lib/validations/job-schema";
+import { stepPropertyTraitsSchema, type StepPropertyTraits } from "@/lib/validations/job-schema";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Building2, Home, ArrowUpDown, ArrowLeftRight, User } from "lucide-react";
 
 interface StepPropertyTraitsProps {
-  onNext: () => void;
+  onNext: (data: StepPropertyTraits) => void;
   onBack: () => void;
 }
 
@@ -24,7 +24,7 @@ export function StepPropertyTraits({ onNext, onBack }: StepPropertyTraitsProps) 
     setValue,
     handleSubmit,
     formState: { errors },
-  } = useForm<z.output<typeof stepPropertyTraitsSchema>>({
+  } = useForm<StepPropertyTraits>({
     resolver: zodResolver(stepPropertyTraitsSchema),
     defaultValues: {
       property_type: "house",
@@ -36,8 +36,8 @@ export function StepPropertyTraits({ onNext, onBack }: StepPropertyTraitsProps) 
 
   const propertyType = watch("property_type");
 
-  const onSubmit = () => {
-    onNext();
+  const onSubmit = (data: StepPropertyTraits) => {
+    onNext(data);
   };
 
   return (

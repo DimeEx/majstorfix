@@ -1,6 +1,8 @@
 export type PropertyType = "house" | "apartment";
 export type MaterialStatus = "buyer_provides" | "handyman_provides" | "negotiable";
-export type Urgency = "emergency" | "few_days" | "flexible";
+export type Urgency = "emergency" | "few_days" | "flexible" | "custom";
+export type CompletionTime = "1-2_hours" | "3-4_hours" | "5-8_hours" | "1-2_days" | "3+_days" | "custom";
+export type Currency = "MKD" | "EUR";
 
 export interface Job {
   id: string;
@@ -13,7 +15,11 @@ export interface Job {
   is_occupied: boolean;
   material_status: MaterialStatus;
   urgency: Urgency;
+  urgency_custom: string | null;
+  completion_time: CompletionTime;
+  completion_time_custom: string | null;
   active_days: number;
+  currency: Currency;
   budget_min: number;
   budget_max: number;
   image_urls: string[];

@@ -3,7 +3,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { stepGeneralInfoSchema } from "@/lib/validations/job-schema";
+import { stepGeneralInfoSchema, type StepGeneralInfo } from "@/lib/validations/job-schema";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -11,7 +11,7 @@ import { Field, FieldLabel, FieldContent, FieldError } from "@/components/ui/fie
 import { MapPin, Home, FileText, Image } from "lucide-react";
 
 interface StepGeneralInfoProps {
-  onNext: () => void;
+  onNext: (data: StepGeneralInfo) => void;
 }
 
 export function StepGeneralInfo({ onNext }: StepGeneralInfoProps) {
@@ -19,13 +19,13 @@ export function StepGeneralInfo({ onNext }: StepGeneralInfoProps) {
     register,
     handleSubmit,
     formState: { errors, isValid },
-  } = useForm<z.output<typeof stepGeneralInfoSchema>>({
+  } = useForm<StepGeneralInfo>({
     resolver: zodResolver(stepGeneralInfoSchema),
     mode: "onBlur",
   });
 
-  const onSubmit = () => {
-    onNext();
+  const onSubmit = (data: StepGeneralInfo) => {
+    onNext(data);
   };
 
   return (

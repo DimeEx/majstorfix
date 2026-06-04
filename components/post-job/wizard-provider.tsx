@@ -1,10 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { z } from "zod";
 import { StepGeneralInfo } from "./step-general-info";
 import { StepPropertyTraits } from "./step-property-traits";
 import { StepLogistics } from "./step-logistics";
-import { Check } from "lucide-react";
+import { Check, Loader2 } from "lucide-react";
+import { fullJobSchema, type FullJobInput } from "@/lib/validations/job-schema";
+import { createClient } from "@/lib/supabase/client";
 
 type WizardStep = "general" | "traits" | "logistics";
 
@@ -15,11 +19,83 @@ const steps: { key: WizardStep; label: string; number: number }[] = [
 ];
 
 export function PostJobWizard() {
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState<WizardStep>("general");
+  const [wizardData, setWizardData] = useState<Partial<FullJobInput>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const currentIndex = steps.findIndex((s) => s.key === currentStep);
 
+  const saveStepData = <T extends Record<string, unknown>>(data: T) => {
+    setWizardData((prev) => ({ ...prev, ...data }));
+  };
+
   const goTo = (step: WizardStep) => setCurrentStep(step);
+
+  const handleNext = <T extends Record<string, unknown>>(data: T) => {
+    saveStepData(data);
+    const nextIndex = currentIndex + 1;
+    if (nextIndex < steps.length) {
+      goTo(steps[nextIndex].key);
+    }
+  };
+
+  const handleSubmit = async (data: Record<string, unknown>) => {
+    const merged = { ...wizardData, ...data };
+    const parsed = fullJobSchema.safeParse(merged);
+
+    if (!parsed.success) {
+      setSubmitError("Проверете ги внесените податоци.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.from("jobs").insert({
+        description: parsed.data.description,
+        city: parsed.data.city,
+        neighborhood: parsed.data.neighborhood,
+        property_type: parsed.data.property_type,
+        floor: parsed.data.floor ?? null,
+        has_elevator: parsed.data.has_elevator ?? false,
+        is_occupied: parsed.data.is_occupied,
+        material_status: parsed.data.material_status,
+        urgency: parsed.data.urgency,
+        urgency_custom: parsed.data.urgency_custom ?? null,
+        completion_time: parsed.data.completion_time,
+        completion_time_custom: parsed.data.completion_time_custom ?? null,
+        active_days: parsed.data.active_days,
+        currency: parsed.data.currency,
+        budget_min: parsed.data.budget_min,
+        budget_max: parsed.data.budget_max,
+        image_urls: parsed.data.images ?? [],
+        owner_id: null,
+      });
+
+      if (error) {
+        setSubmitError(error.message);
+        return;
+      }
+
+      router.push("/jobs");
+      router.refresh();
+    } catch {
+      setSubmitError("Настана грешка при објавување. Обидете се повторно.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleBack = () => {
+    const prevIndex = currentIndex - 1;
+    if (prevIndex >= 0) {
+      goTo(steps[prevIndex].key);
+    }
+  };
 
   return (
     <div>
@@ -70,12 +146,25 @@ export function PostJobWizard() {
 
       {/* Step Content */}
       <div className="bg-card rounded-2xl border border-border/50 shadow-sm shadow-border/50 p-6 sm:p-8">
-        {currentStep === "general" && <StepGeneralInfo onNext={() => goTo("traits")} />}
-        {currentStep === "traits" && (
-          <StepPropertyTraits onNext={() => goTo("logistics")} onBack={() => goTo("general")} />
+        {isSubmitting && (
+          <div className="flex flex-col items-center justify-center py-16 gap-3">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <p className="text-sm text-muted-foreground">Објавување на работата...</p>
+          </div>
         )}
-        {currentStep === "logistics" && (
-          <StepLogistics onBack={() => goTo("traits")} />
+
+        {!isSubmitting && currentStep === "general" && (
+          <StepGeneralInfo onNext={handleNext} />
+        )}
+        {!isSubmitting && currentStep === "traits" && (
+          <StepPropertyTraits onNext={handleNext} onBack={handleBack} />
+        )}
+        {!isSubmitting && currentStep === "logistics" && (
+          <StepLogistics onBack={handleBack} onSubmit={handleSubmit} />
+        )}
+
+        {submitError && (
+          <p className="mt-4 text-sm text-destructive text-center">{submitError}</p>
         )}
       </div>
     </div>

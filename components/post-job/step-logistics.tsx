@@ -3,44 +3,48 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { stepLogisticsSchema } from "@/lib/validations/job-schema";
+import { stepLogisticsSchema, type StepLogistics } from "@/lib/validations/job-schema";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Field, FieldLabel, FieldContent, FieldError, FieldGroup } from "@/components/ui/field";
 import { Label } from "@/components/ui/label";
-import { Package, Timer, CalendarDays, Wallet, Clock } from "lucide-react";
+import { Package, Timer, CalendarDays, Wallet, Clock, DollarSign } from "lucide-react";
 
 interface StepLogisticsProps {
   onBack: () => void;
+  onSubmit: (data: Record<string, unknown>) => void;
 }
 
-export function StepLogistics({ onBack }: StepLogisticsProps) {
+export function StepLogistics({ onBack, onSubmit }: StepLogisticsProps) {
   const {
     register,
     setValue,
     watch,
     handleSubmit,
     formState: { errors, isValid },
-  } = useForm<z.output<typeof stepLogisticsSchema>>({
+  } = useForm<StepLogistics>({
     resolver: zodResolver(stepLogisticsSchema),
     defaultValues: {
       material_status: "negotiable",
+      urgency: "flexible",
       completion_time: "1-2_hours",
       active_days: 3,
+      currency: "MKD",
     },
     mode: "onBlur",
   });
 
   const completionTime = watch("completion_time");
+  const urgency = watch("urgency");
 
-  const onSubmit = () => {
-    // TODO: Submit full form data to Supabase
+  const onFormSubmit = (data: StepLogistics) => {
+    onSubmit(data as unknown as Record<string, unknown>);
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-6">
       <Field>
         <FieldLabel className="flex items-center gap-2 text-sm">
           <Package className="h-4 w-4 text-primary" />
@@ -75,7 +79,10 @@ export function StepLogistics({ onBack }: StepLogisticsProps) {
           Итност
         </FieldLabel>
         <FieldContent>
-          <Select onValueChange={(val) => setValue("urgency", val as "emergency" | "few_days" | "flexible")}>
+          <Select
+            defaultValue="flexible"
+            onValueChange={(val) => setValue("urgency", val as "emergency" | "few_days" | "flexible" | "custom")}
+          >
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Изберете итност" />
             </SelectTrigger>
@@ -83,9 +90,16 @@ export function StepLogistics({ onBack }: StepLogisticsProps) {
               <SelectItem value="emergency">Итно (Денес)</SelectItem>
               <SelectItem value="few_days">Во рок од 2-3 дена</SelectItem>
               <SelectItem value="flexible">Флексибилно</SelectItem>
+              <SelectItem value="custom">Прилагодено</SelectItem>
             </SelectContent>
           </Select>
+          {urgency === "custom" && (
+            <div className="mt-3 animate-in slide-in-from-top-2 duration-200">
+              <Input placeholder="Пр. Во рок од 1 недела, до 15ти, итн..." {...register("urgency_custom")} />
+            </div>
+          )}
           <FieldError errors={errors.urgency ? [errors.urgency] : undefined} />
+          <FieldError errors={errors.urgency_custom ? [errors.urgency_custom] : undefined} />
         </FieldContent>
       </Field>
 
@@ -152,21 +166,45 @@ export function StepLogistics({ onBack }: StepLogisticsProps) {
       <FieldGroup>
         <FieldLabel className="flex items-center gap-2 text-sm mb-1">
           <Wallet className="h-4 w-4 text-primary" />
-          Буџет (MKD)
+          Буџет
         </FieldLabel>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Field>
-            <FieldContent>
-              <Input type="number" min={1} placeholder="Од" {...register("budget_min")} />
-              <FieldError errors={errors.budget_min ? [errors.budget_min] : undefined} />
-            </FieldContent>
-          </Field>
-          <Field>
-            <FieldContent>
-              <Input type="number" min={1} placeholder="До" {...register("budget_max")} />
-              <FieldError errors={errors.budget_max ? [errors.budget_max] : undefined} />
-            </FieldContent>
-          </Field>
+        <div className="flex gap-2 items-start">
+          <div className="flex-1">
+            <Field>
+              <FieldContent>
+                <Input type="number" min={1} placeholder="Од" {...register("budget_min")} />
+                <FieldError errors={errors.budget_min ? [errors.budget_min] : undefined} />
+              </FieldContent>
+            </Field>
+          </div>
+          <div className="flex-1">
+            <Field>
+              <FieldContent>
+                <Input type="number" min={1} placeholder="До" {...register("budget_max")} />
+                <FieldError errors={errors.budget_max ? [errors.budget_max] : undefined} />
+              </FieldContent>
+            </Field>
+          </div>
+          <div className="w-24 shrink-0">
+            <Field>
+              <FieldContent>
+                <Select
+                  defaultValue="MKD"
+                  onValueChange={(val) => setValue("currency", val as "MKD" | "EUR")}
+                >
+                  <SelectTrigger className="w-full">
+                    <DollarSign className="h-4 w-4 text-muted-foreground shrink-0" />
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="MKD">MKD</SelectItem>
+                    <SelectItem value="EUR">EUR</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FieldError errors={errors.currency ? [errors.currency] : undefined} />
+              </FieldContent>
+            </Field>
+          </div>
         </div>
       </FieldGroup>
 
