@@ -94,12 +94,12 @@ describe("Step 2: Property Traits", () => {
     expect(result.success).toBe(false);
   });
 
-  it("defaults has_elevator to false", () => {
-    const result = stepPropertyTraitsSchema.parse({
+  it("accepts missing has_elevator (optional for houses)", () => {
+    const result = stepPropertyTraitsSchema.safeParse({
       property_type: "house",
       is_occupied: true,
     });
-    expect(result.has_elevator).toBe(false);
+    expect(result.success).toBe(true);
   });
 });
 

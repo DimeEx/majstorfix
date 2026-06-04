@@ -13,20 +13,20 @@ export const stepGeneralInfoSchema = z.object({
 
 export const stepPropertyTraitsSchema = z.object({
   property_type: propertyTypeEnum,
-  floor: z.coerce.number().int().min(0).optional().nullable(),
-  has_elevator: z.boolean().optional().default(false),
+  floor: z.coerce.number<number>().int().min(0).optional().nullable(),
+  has_elevator: z.boolean().optional(),
   is_occupied: z.boolean(),
 });
 
 export const stepLogisticsSchema = z.object({
   material_status: materialStatusEnum,
   urgency: urgencyEnum,
-  active_days: z.coerce.number().int().refine(
+  active_days: z.coerce.number<number>().int().refine(
     (val) => [1, 3, 7].includes(val),
     { message: "Изберете валиден период на истекување" }
   ),
-  budget_min: z.coerce.number().int().min(1, "Внесете минимален буџет"),
-  budget_max: z.coerce.number().int().min(1, "Внесете максимален буџет"),
+  budget_min: z.coerce.number<number>().int().min(1, "Внесете минимален буџет"),
+  budget_max: z.coerce.number<number>().int().min(1, "Внесете максимален буџет"),
 }).refine(
   (data) => data.budget_max >= data.budget_min,
   {
