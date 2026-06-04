@@ -180,4 +180,85 @@ When writing or modifying code for this project, you must strictly follow these 
    Remember that Next.js uses Server Components by default. Because our forms, step wizards, and real-time trackers rely entirely on React state management (`useState`, `useEffect`, or interactive event handlers), you must explicitly add the `"use client"` directive at the very top of these component files. Keep server logic and client logic strictly separated.
 
 3. **Keep Types Extracted**
-   You must never declare raw TypeScript interfaces inline or duplicate them inside individual page or component files. You must centralize all core database schemas and application types inside the `src/types/` directory. Always import your types cleanly from this folder to ensure the entire application stays typed uniformly.
+   You must never declare raw TypeScript interfaces inline or duplicate them inside individual page or component files. You must centralize all core database schemas and application types inside the `lib/supabase/types.ts` file. Always import your types cleanly from this folder to ensure the entire application stays typed uniformly.
+
+---
+
+## Implementation Summary (June 2026)
+
+### Tech Stack (Installed)
+| Layer | Technology | Version |
+|-------|-----------|---------|
+| Framework | Next.js (App Router) | 16.2.7 |
+| UI Library | React | 19.2.4 |
+| Styling | Tailwind CSS | v4 |
+| Components | shadcn/ui (base-nova) | 4.10.0 |
+| Icons | Lucide React | 1.17.0 |
+| Validation | Zod | 4.4.3 |
+| Forms | React Hook Form + @hookform/resolvers | 7.77 / 5.4 |
+| Database | Supabase (PostgreSQL) | @supabase/supabase-js 2.107 |
+| Auth | Supabase Auth + @supabase/ssr | latest |
+| Testing | Vitest + Testing Library | 4.1.8 / 16.3 |
+
+### Project Structure (Actual)
+```
+majstorfix/
+├── app/                          # Next.js App Router
+│   ├── layout.tsx                # Root layout (Navbar, Geist fonts, Toaster)
+│   ├── page.tsx                  # Landing page (dual CTA)
+│   ├── post-job/page.tsx         # Multi-step wizard page
+│   ├── jobs/
+│   │   ├── page.tsx              # Filterable job feed (dynamic, searchParams)
+│   │   └── [id]/page.tsx         # Job detail + bid form (dynamic, params)
+│   └── dashboard/page.tsx        # Homeowner lead tracker
+├── components/
+│   ├── ui/                       # shadcn/ui primitives (14 components)
+│   ├── shared/navbar.tsx         # Sticky navigation
+│   ├── post-job/
+│   │   ├── wizard-provider.tsx   # 3-step wizard state container
+│   │   ├── step-general-info.tsx # City, neighborhood, description, photos
+│   │   ├── step-property-traits.tsx # House/Apartment, floor, elevator, occupancy
+│   │   └── step-logistics.tsx    # Materials, urgency, expiry, budget range
+│   ├── jobs/
+│   │   ├── job-card.tsx          # Job listing card
+│   │   ├── job-filters.tsx       # City filter (URL search params)
+│   │   └── job-badges.tsx        # Property + urgency badges
+│   ├── bid/
+│   │   └── bid-form.tsx          # Dual pricing, phone, date, notes
+│   └── dashboard/
+│       ├── lead-tracker.tsx      # Dashboard landing (empty state)
+│       └── contact-buttons.tsx   # tel: + viber:// deep links
+├── lib/
+│   ├── utils.ts                  # cn() helper
+│   ├── supabase/
+│   │   ├── client.ts             # Browser Supabase client (use client)
+│   │   ├── server.ts             # Server Supabase client (async cookies)
+│   │   └── types.ts              # Database types (Job, Bid, Database)
+│   └── validations/
+│       ├── job-schema.ts         # Zod schemas for all 3 wizard steps + full
+│       └── bid-schema.ts         # Zod schema for bid form
+├── supabase/migrations/
+│   └── 00001_initial_schema.sql  # Full migration (enums, tables, indexes, RLS)
+├── __tests__/                    # 61 tests across 13 files
+│   ├── ui/                       # Button + Input unit tests
+│   ├── supabase/                 # Types, client imports, migration content
+│   ├── validations/              # Zod schema validation tests
+│   ├── pages/                    # Page rendering + navbar tests
+│   └── components/               # JobBadges + ContactButtons tests
+├── vitest.config.ts
+├── components.json               # shadcn config
+├── .env                          # Supabase credentials (SUPABASE_URL, ANON_API_KEY, etc.)
+└── package.json
+```
+
+### Test Coverage
+- **13 test files · 61 tests — all passing**
+- `npm test` — Vitest runner (4.1.8)
+- `npm run build` — Full Next.js production build + TypeScript check
+
+### Next Steps (TODO)
+1. **Server Functions** — Wire up `createJob`, `createBid` Server Functions in `lib/actions/`
+2. **Image Upload** — Implement Supabase Storage upload flow in StepGeneralInfo
+3. **Auth** — Add Supabase Auth (phone OTP) with login/register pages
+4. **Real-Time Quotes** — Subscribe to new bids on the Lead Tracker page
+5. **Handyman Profile** — Basic profile page for handymen
