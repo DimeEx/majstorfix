@@ -251,14 +251,21 @@ majstorfix/
 └── package.json
 ```
 
+### Completed Work
+- **Auth check in wizard** — `wizard-provider.tsx` now calls `supabase.auth.getUser()` before insert; shows "Мора да бидете најавени" if not authenticated
+- **Fixed `.env` variable names** — Added `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` so the browser client initializes correctly (server client uses unprefixed names)
+- **New DB columns** — Added `urgency_custom`, `completion_time`, `completion_time_custom`, `currency` to migration, types, tests, and insert payload
+- **Types alignment** — `Database` type updated to match Supabase's expected shape (`Relationships`, `Views`, `Functions`)
+- **Insert uses real `owner_id`** — Now passes `userData.user.id` instead of hardcoded `null`
+
 ### Test Coverage
 - **13 test files · 61 tests — all passing**
 - `npm test` — Vitest runner (4.1.8)
 - `npm run build` — Full Next.js production build + TypeScript check
 
 ### Next Steps (TODO)
-1. **Server Functions** — Wire up `createJob`, `createBid` Server Functions in `lib/actions/`
-2. **Image Upload** — Implement Supabase Storage upload flow in StepGeneralInfo
-3. **Auth** — Add Supabase Auth (phone OTP) with login/register pages
+1. **Auth pages** — Add `app/auth/login/page.tsx` and `app/auth/register/page.tsx` with Supabase Auth (email/password or phone OTP); wire up Navbar with login/logout buttons and protect `/post-job` route
+2. **Server Functions** — Wire up `createJob`, `createBid` Server Functions in `lib/actions/`
+3. **Image Upload** — Implement Supabase Storage upload flow in StepGeneralInfo
 4. **Real-Time Quotes** — Subscribe to new bids on the Lead Tracker page
 5. **Handyman Profile** — Basic profile page for handymen
