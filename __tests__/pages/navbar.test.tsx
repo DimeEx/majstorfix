@@ -1,6 +1,21 @@
 import { render, screen } from "@testing-library/react";
 import { Navbar } from "@/components/shared/navbar";
 
+const mockRouter = { push: vi.fn(), refresh: vi.fn() };
+
+vi.mock("next/navigation", () => ({
+  useRouter: () => mockRouter,
+}));
+
+vi.mock("@/lib/supabase/client", () => ({
+  createClient: () => ({
+    auth: {
+      getUser: () => Promise.resolve({ data: { user: null }, error: null }),
+      onAuthStateChange: () => ({ data: { subscription: { unsubscribe: vi.fn() } } }),
+    },
+  }),
+}));
+
 describe("Navbar", () => {
   it("renders the logo and brand name", () => {
     render(<Navbar />);
@@ -18,5 +33,10 @@ describe("Navbar", () => {
     expect(screen.getByText("MajstorFix").closest("a")).toHaveAttribute("href", "/");
     expect(screen.getByText("Работи").closest("a")).toHaveAttribute("href", "/jobs");
     expect(screen.getByText("Објави работа").closest("a")).toHaveAttribute("href", "/post-job");
+  });
+
+  it("shows login button when not authenticated", async () => {
+    render(<Navbar />);
+    expect(await screen.findByText("Најави се")).toBeInTheDocument();
   });
 });

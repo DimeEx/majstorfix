@@ -2,6 +2,8 @@ import { Suspense } from "react";
 import { JobFilters } from "@/components/jobs/job-filters";
 import { JobCard } from "@/components/jobs/job-card";
 import { Briefcase } from "lucide-react";
+import { createClient } from "@/lib/supabase/server";
+import type { Job } from "@/lib/supabase/types";
 
 export default async function JobsPage({
   searchParams,
@@ -38,21 +40,21 @@ export default async function JobsPage({
 }
 
 async function JobList({ city }: { city?: string }) {
-  const jobs: Array<{
-    id: string;
-    description: string;
-    city: string;
-    neighborhood: string;
-    property_type: "house" | "apartment";
-    floor: number | null;
-    has_elevator: boolean;
-    urgency: string;
-    budget_min: number;
-    budget_max: number;
-    created_at: string;
-  }> = [];
+  const supabase = await createClient();
 
-  if (jobs.length === 0) {
+  let query = supabase
+    .from("jobs")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (city) {
+    query = query.eq("city", city);
+  }
+
+  const { data: jobsRaw } = await query;
+  const jobs = jobsRaw as Job[] | null;
+
+  if (!jobs || jobs.length === 0) {
     return (
       <div className="mt-6 flex flex-col items-center justify-center rounded-2xl border border-dashed border-border/50 bg-card/50 py-16 px-4">
         <Briefcase className="h-8 w-8 text-muted-foreground/50 mb-3" />
@@ -60,8 +62,8 @@ async function JobList({ city }: { city?: string }) {
           Моментално нема активни работи.
         </p>
         <p className="text-center text-sm text-muted-foreground/70 mt-1">
-                          Објави нова работа за да добиеш понуди од мајстори.
-                                </p>
+          Објави нова работа за да добиеш понуди од мајстори.
+        </p>
       </div>
     );
   }

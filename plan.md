@@ -257,15 +257,24 @@ majstorfix/
 - **New DB columns** — Added `urgency_custom`, `completion_time`, `completion_time_custom`, `currency` to migration, types, tests, and insert payload
 - **Types alignment** — `Database` type updated to match Supabase's expected shape (`Relationships`, `Views`, `Functions`)
 - **Insert uses real `owner_id`** — Now passes `userData.user.id` instead of hardcoded `null`
+- **Auth pages** — Added `app/auth/login/page.tsx`, `app/auth/register/page.tsx`, `app/auth/confirm/page.tsx`, server actions (signUp/signIn/signOut), Supabase SSR middleware as `proxy.ts`, and navbar auth state (login/logout buttons)
+- **Real data fetching** — `/jobs` fetches from Supabase with city filter, `/jobs/[id]` fetches single job with full details, `/dashboard` fetches user's own jobs with auth check
+- **Bid submission** — `BidForm` now inserts into Supabase `bids` table with loading state, toast feedback, and form reset
+- **Image upload** — `StepGeneralInfo` now uploads files to Supabase Storage (`job-images` bucket) with previews, upload progress, and stores returned URLs
+- **Server actions** — Created `lib/actions/create-job.ts` and `lib/actions/create-bid.ts`; wizard and bid form now use server actions instead of direct Supabase client calls
+- **Route protection** — `proxy.ts` redirects unauthenticated users from `/post-job` and `/dashboard` to `/auth/login`
+- **Real-time quotes** — `useActiveBids` hook subscribes to Realtime INSERTs on `bids` table; dashboard shows live bid count badges per job
+- **Handyman profile** — `/profile` page with user email, registration date, and link to dashboard; navbar updated with "Моите" link and profile icon
 
 ### Test Coverage
-- **13 test files · 61 tests — all passing**
+- **13 test files · 62 tests — all passing**
 - `npm test` — Vitest runner (4.1.8)
 - `npm run build` — Full Next.js production build + TypeScript check
 
-### Next Steps (TODO)
-1. **Auth pages** — Add `app/auth/login/page.tsx` and `app/auth/register/page.tsx` with Supabase Auth (email/password or phone OTP); wire up Navbar with login/logout buttons and protect `/post-job` route
-2. **Server Functions** — Wire up `createJob`, `createBid` Server Functions in `lib/actions/`
-3. **Image Upload** — Implement Supabase Storage upload flow in StepGeneralInfo
-4. **Real-Time Quotes** — Subscribe to new bids on the Lead Tracker page
-5. **Handyman Profile** — Basic profile page for handymen
+### Complete (MVP)
+All features from the initial plan are implemented. The core MVP flow works:
+1. User registers/logs in → browses jobs or posts a new job
+2. Job posting wizard collects details with image uploads
+3. Handymen view job details and submit bids
+4. Homeowners see incoming bids in real-time on their dashboard
+5. Contact via phone/Viber deep links

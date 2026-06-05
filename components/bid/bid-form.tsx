@@ -1,32 +1,59 @@
 "use client";
 
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import { bidSchema } from "@/lib/validations/bid-schema";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Field, FieldLabel, FieldContent, FieldError, FieldGroup } from "@/components/ui/field";
+import { createBid } from "@/lib/actions/create-bid";
 
 interface BidFormProps {
   jobId: string;
 }
 
 export function BidForm({ jobId }: BidFormProps) {
+  const [submitting, setSubmitting] = useState(false);
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors, isValid },
   } = useForm<z.output<typeof bidSchema>>({
     resolver: zodResolver(bidSchema),
     mode: "onBlur",
   });
 
-  const onSubmit = (data: z.output<typeof bidSchema>) => {
-    // TODO: Submit bid to Supabase
-    console.log({ jobId, ...data });
+  const onSubmit = async (data: z.output<typeof bidSchema>) => {
+    setSubmitting(true);
+    try {
+      const result = await createBid({
+        jobId,
+        handyman_phone: data.handyman_phone,
+        price_labor_only: data.price_labor_only,
+        price_with_materials: data.price_with_materials ?? null,
+        availability_date: data.availability_date,
+        notes: data.notes ?? null,
+      });
+
+      if (result?.error) {
+        toast.error(result.error);
+        return;
+      }
+
+      toast.success("Вашата понуда е испратена!");
+      reset();
+    } catch {
+      toast.error("Настана грешка. Обидете се повторно.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -78,8 +105,15 @@ export function BidForm({ jobId }: BidFormProps) {
             </FieldContent>
           </Field>
 
-          <Button type="submit" disabled={!isValid} className="w-full">
-            Испрати понуда
+          <Button type="submit" disabled={!isValid || submitting} className="w-full">
+            {submitting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Испраќање...
+              </>
+            ) : (
+              "Испрати понуда"
+            )}
           </Button>
         </form>
       </CardContent>

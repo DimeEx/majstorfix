@@ -46,14 +46,14 @@ describe("Step 1: General Info", () => {
     expect(result.success).toBe(false);
   });
 
-  it("rejects empty images array", () => {
+  it("accepts empty images (optional)", () => {
     const result = stepGeneralInfoSchema.safeParse({
       city: "Skopje",
       neighborhood: "Centar",
       description: "Leaky faucet issue in the bathroom",
       images: [],
     });
-    expect(result.success).toBe(false);
+    expect(result.success).toBe(true);
   });
 });
 
@@ -108,6 +108,8 @@ describe("Step 3: Logistics & Budget", () => {
     const result = stepLogisticsSchema.safeParse({
       material_status: "negotiable",
       urgency: "emergency",
+      completion_time: "1-2_days",
+      currency: "MKD",
       active_days: 3,
       budget_min: 1000,
       budget_max: 5000,
@@ -119,6 +121,8 @@ describe("Step 3: Logistics & Budget", () => {
     const result = stepLogisticsSchema.safeParse({
       material_status: "buyer_provides",
       urgency: "flexible",
+      completion_time: "1-2_days",
+      currency: "MKD",
       active_days: 7,
       budget_min: 5000,
       budget_max: 1000,
@@ -130,6 +134,8 @@ describe("Step 3: Logistics & Budget", () => {
     const result = stepLogisticsSchema.safeParse({
       material_status: "handyman_provides",
       urgency: "few_days",
+      completion_time: "1-2_days",
+      currency: "MKD",
       active_days: 99,
       budget_min: 1000,
       budget_max: 2000,
@@ -141,6 +147,8 @@ describe("Step 3: Logistics & Budget", () => {
     const result = stepLogisticsSchema.safeParse({
       material_status: "invalid",
       urgency: "flexible",
+      completion_time: "1-2_days",
+      currency: "MKD",
       active_days: 1,
       budget_min: 500,
       budget_max: 1500,
@@ -152,6 +160,8 @@ describe("Step 3: Logistics & Budget", () => {
     const result = stepLogisticsSchema.safeParse({
       material_status: "negotiable",
       urgency: "emergency",
+      completion_time: "1-2_days",
+      currency: "MKD",
       active_days: 3,
       budget_min: 0,
       budget_max: 5000,
@@ -173,6 +183,8 @@ describe("Full Job Schema", () => {
       is_occupied: true,
       material_status: "buyer_provides",
       urgency: "flexible",
+      completion_time: "1-2_days",
+      currency: "MKD",
       active_days: 7,
       budget_min: 5000,
       budget_max: 15000,

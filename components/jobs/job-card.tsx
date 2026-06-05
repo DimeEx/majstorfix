@@ -1,21 +1,10 @@
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { JobBadges } from "./job-badges";
+import type { Job } from "@/lib/supabase/types";
 
 interface JobCardProps {
-  job: {
-    id: string;
-    description: string;
-    city: string;
-    neighborhood: string;
-    property_type: "house" | "apartment";
-    floor: number | null;
-    has_elevator: boolean;
-    urgency: string;
-    budget_min: number;
-    budget_max: number;
-    created_at: string;
-  };
+  job: Job;
 }
 
 export function JobCard({ job }: JobCardProps) {
@@ -39,8 +28,8 @@ export function JobCard({ job }: JobCardProps) {
               />
             </div>
             <div className="shrink-0 text-right">
-              <p className="font-semibold">
-                {job.budget_min.toLocaleString()} - {job.budget_max.toLocaleString()} MKD
+              <p className="font-semibold whitespace-nowrap">
+                {job.budget_min.toLocaleString()} - {job.budget_max.toLocaleString()} {job.currency}
               </p>
             </div>
           </div>
