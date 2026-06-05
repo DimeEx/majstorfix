@@ -33,7 +33,6 @@ export function LoginForm() {
           refresh_token: state.refreshToken,
         });
         router.push("/");
-        router.refresh();
       };
       initSession();
     } else if (state?.error) {

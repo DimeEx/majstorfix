@@ -34,7 +34,6 @@ export function Navbar() {
     const supabase = createClient();
     await supabase.auth.signOut();
     router.push("/");
-    router.refresh();
   };
 
   return (

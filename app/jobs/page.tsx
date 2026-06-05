@@ -25,7 +25,9 @@ export default async function JobsPage({
           Прегледај ги моментално достапните работи во твојот град
         </p>
       </div>
-      <JobFilters />
+      <Suspense fallback={null}>
+        <JobFilters />
+      </Suspense>
       <Suspense
         fallback={
           <div className="mt-6 flex items-center justify-center py-12">

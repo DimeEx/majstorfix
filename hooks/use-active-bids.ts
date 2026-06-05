@@ -9,6 +9,8 @@ export function useActiveBids(jobIds: string[]) {
   const [bidCounts, setBidCounts] = useState<Record<string, number>>({});
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  const jobIdsKey = JSON.stringify(jobIds);
+
   useEffect(() => {
     if (jobIds.length === 0) return;
 
@@ -25,7 +27,8 @@ export function useActiveBids(jobIds: string[]) {
         clearInterval(intervalRef.current);
       }
     };
-  }, [jobIds]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [jobIdsKey]);
 
   const updateInitialCounts = (counts: Record<string, number>) => {
     setBidCounts(counts);
