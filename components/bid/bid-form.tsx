@@ -38,6 +38,8 @@ export function BidForm({ jobId }: BidFormProps) {
         handyman_phone: data.handyman_phone,
         price_labor_only: data.price_labor_only,
         price_with_materials: data.price_with_materials ?? null,
+        price_labor_only_eur: data.price_labor_only_eur ?? null,
+        price_with_materials_eur: data.price_with_materials_eur ?? null,
         availability_date: data.availability_date,
         notes: data.notes ?? null,
       });
@@ -64,21 +66,39 @@ export function BidForm({ jobId }: BidFormProps) {
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <FieldGroup>
-            <Field>
-              <FieldLabel>Цена само за работа (MKD)</FieldLabel>
-              <FieldContent>
-                <Input type="number" min={1} placeholder="Пр. 3000" {...register("price_labor_only")} />
-                <FieldError errors={errors.price_labor_only ? [errors.price_labor_only] : undefined} />
-              </FieldContent>
-            </Field>
+            <div className="grid grid-cols-2 gap-3">
+              <Field>
+                <FieldLabel>Само работа (MKD)</FieldLabel>
+                <FieldContent>
+                  <Input type="number" min={1} placeholder="Пр. 3000" {...register("price_labor_only")} />
+                  <FieldError errors={errors.price_labor_only ? [errors.price_labor_only] : undefined} />
+                </FieldContent>
+              </Field>
+              <Field>
+                <FieldLabel>Само работа (EUR)</FieldLabel>
+                <FieldContent>
+                  <Input type="number" min={0} step="0.01" placeholder="Пр. 50" {...register("price_labor_only_eur")} />
+                  <FieldError errors={errors.price_labor_only_eur ? [errors.price_labor_only_eur] : undefined} />
+                </FieldContent>
+              </Field>
+            </div>
 
-            <Field>
-              <FieldLabel>Цена со материјали (MKD)</FieldLabel>
-              <FieldContent>
-                <Input type="number" min={1} placeholder="Пр. 5000 (опционално)" {...register("price_with_materials")} />
-                <FieldError errors={errors.price_with_materials ? [errors.price_with_materials] : undefined} />
-              </FieldContent>
-            </Field>
+            <div className="grid grid-cols-2 gap-3">
+              <Field>
+                <FieldLabel>Со материјали (MKD)</FieldLabel>
+                <FieldContent>
+                  <Input type="number" min={1} placeholder="Пр. 5000" {...register("price_with_materials")} />
+                  <FieldError errors={errors.price_with_materials ? [errors.price_with_materials] : undefined} />
+                </FieldContent>
+              </Field>
+              <Field>
+                <FieldLabel>Со материјали (EUR)</FieldLabel>
+                <FieldContent>
+                  <Input type="number" min={0} step="0.01" placeholder="Пр. 80" {...register("price_with_materials_eur")} />
+                  <FieldError errors={errors.price_with_materials_eur ? [errors.price_with_materials_eur] : undefined} />
+                </FieldContent>
+              </Field>
+            </div>
           </FieldGroup>
 
           <Field>

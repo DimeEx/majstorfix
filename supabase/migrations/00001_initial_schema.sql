@@ -83,10 +83,16 @@ CREATE TABLE IF NOT EXISTS bids (
     handyman_phone TEXT NOT NULL,
     price_labor_only INT NOT NULL,
     price_with_materials INT DEFAULT NULL,
+    price_labor_only_eur INT DEFAULT NULL,
+    price_with_materials_eur INT DEFAULT NULL,
     availability_date TEXT NOT NULL,
     notes TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
+
+-- Ensure ALL bids columns exist
+ALTER TABLE bids ADD COLUMN IF NOT EXISTS price_labor_only_eur INT DEFAULT NULL;
+ALTER TABLE bids ADD COLUMN IF NOT EXISTS price_with_materials_eur INT DEFAULT NULL;
 
 -- Indexes for common queries
 CREATE INDEX IF NOT EXISTS idx_jobs_city ON jobs(city);

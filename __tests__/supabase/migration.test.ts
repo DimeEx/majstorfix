@@ -27,7 +27,7 @@ describe("Database Migration", () => {
   });
 
   it("creates jobs table with required columns", () => {
-    expect(sql).toContain("CREATE TABLE jobs");
+    expect(sql).toContain("CREATE TABLE IF NOT EXISTS jobs");
     expect(sql).toContain("id UUID PRIMARY KEY");
     expect(sql).toContain("description TEXT NOT NULL");
     expect(sql).toContain("property_type property_enum");
@@ -38,7 +38,7 @@ describe("Database Migration", () => {
   });
 
   it("creates bids table with required columns", () => {
-    expect(sql).toContain("CREATE TABLE bids");
+    expect(sql).toContain("CREATE TABLE IF NOT EXISTS bids");
     expect(sql).toContain("job_id UUID REFERENCES jobs(id) ON DELETE CASCADE");
     expect(sql).toContain("handyman_phone TEXT NOT NULL");
     expect(sql).toContain("price_labor_only INT NOT NULL");
@@ -46,10 +46,10 @@ describe("Database Migration", () => {
   });
 
   it("creates indexes", () => {
-    expect(sql).toContain("CREATE INDEX idx_jobs_city");
-    expect(sql).toContain("CREATE INDEX idx_jobs_urgency");
-    expect(sql).toContain("CREATE INDEX idx_jobs_created_at");
-    expect(sql).toContain("CREATE INDEX idx_bids_job_id");
+    expect(sql).toContain("CREATE INDEX IF NOT EXISTS idx_jobs_city");
+    expect(sql).toContain("CREATE INDEX IF NOT EXISTS idx_jobs_urgency");
+    expect(sql).toContain("CREATE INDEX IF NOT EXISTS idx_jobs_created_at");
+    expect(sql).toContain("CREATE INDEX IF NOT EXISTS idx_bids_job_id");
   });
 
   it("enables Row Level Security", () => {

@@ -33,6 +33,8 @@ export interface Bid {
   handyman_phone: string;
   price_labor_only: number;
   price_with_materials: number | null;
+  price_labor_only_eur: number | null;
+  price_with_materials_eur: number | null;
   availability_date: string;
   notes: string | null;
   created_at: string;

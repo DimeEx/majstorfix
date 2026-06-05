@@ -10,7 +10,7 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Field, FieldLabel, FieldContent, FieldError, FieldGroup } from "@/components/ui/field";
 import { Label } from "@/components/ui/label";
-import { Package, Timer, CalendarDays, Wallet, Clock, DollarSign } from "lucide-react";
+import { Package, Timer, CalendarDays, Wallet, Clock } from "lucide-react";
 
 interface StepLogisticsProps {
   onBack: () => void;
@@ -193,7 +193,6 @@ export function StepLogistics({ onBack, onSubmit }: StepLogisticsProps) {
                   onValueChange={(val) => setValue("currency", val as "MKD" | "EUR")}
                 >
                   <SelectTrigger className="w-full">
-                    <DollarSign className="h-4 w-4 text-muted-foreground shrink-0" />
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>

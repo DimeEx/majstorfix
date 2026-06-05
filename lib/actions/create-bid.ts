@@ -9,6 +9,8 @@ interface CreateBidInput {
   handyman_phone: string;
   price_labor_only: number;
   price_with_materials?: number | null;
+  price_labor_only_eur?: number | null;
+  price_with_materials_eur?: number | null;
   availability_date: string;
   notes?: string | null;
 }
@@ -20,6 +22,8 @@ export async function createBid(input: CreateBidInput) {
     handyman_phone: input.handyman_phone,
     price_labor_only: input.price_labor_only,
     price_with_materials: input.price_with_materials,
+    price_labor_only_eur: input.price_labor_only_eur,
+    price_with_materials_eur: input.price_with_materials_eur,
     availability_date: input.availability_date,
     notes: input.notes,
   });
@@ -33,6 +37,8 @@ export async function createBid(input: CreateBidInput) {
     handyman_phone: parsed.data.handyman_phone,
     price_labor_only: parsed.data.price_labor_only,
     price_with_materials: parsed.data.price_with_materials ?? null,
+    price_labor_only_eur: parsed.data.price_labor_only_eur ?? null,
+    price_with_materials_eur: parsed.data.price_with_materials_eur ?? null,
     availability_date: parsed.data.availability_date,
     notes: parsed.data.notes ?? null,
   });
