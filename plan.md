@@ -277,6 +277,7 @@ majstorfix/
 - **Removed redundant cache purges** — Removed `revalidatePath("/")` from signIn/signOut (redirect already triggers fresh render); removed `router.refresh()` after `router.push()` in edit-job-form and wizard-provider
 - **Fixed useActionState wrapping** — Server actions `signIn`/`signUp` now accept `_prev` as first param; forms pass them directly to `useActionState` instead of wrapping in anonymous functions (fixes `pending` state / loading spinner)
 - **Fixed client session sync** — `signIn` returns `accessToken`/`refreshToken`; login form calls `supabase.auth.setSession()` on the browser client to initialize the non-HttpOnly cookie so the Navbar detects the logged-in state
+- **Replaced Realtime with polling** — `useActiveBids` hook now polls `getBidCounts` server action every 30s instead of subscribing to `postgres_changes` on `bids` table (was causing 13,959 `realtime.list_changes` calls = 64% of DB time); migration `00008` removes `bids` from `supabase_realtime` publication
 
 ### Test Coverage
 - **22 test files · 128 tests — all passing**

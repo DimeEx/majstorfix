@@ -1,38 +1,29 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { useEffect, useState, useRef } from "react";
+import { getBidCounts } from "@/lib/actions/get-bid-counts";
+
+const POLL_INTERVAL_MS = 30_000;
 
 export function useActiveBids(jobIds: string[]) {
   const [bidCounts, setBidCounts] = useState<Record<string, number>>({});
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     if (jobIds.length === 0) return;
 
-    const supabase = createClient();
+    const poll = async () => {
+      const counts = await getBidCounts(jobIds);
+      setBidCounts(counts);
+    };
 
-    const channel = supabase
-      .channel("bids-realtime")
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "bids",
-          filter: `job_id=in.(${jobIds.map((id) => `"${id}"`).join(",")})`,
-        },
-        (payload) => {
-          const newBid = payload.new as { job_id: string };
-          setBidCounts((prev) => ({
-            ...prev,
-            [newBid.job_id]: (prev[newBid.job_id] ?? 0) + 1,
-          }));
-        }
-      )
-      .subscribe();
+    poll();
+    intervalRef.current = setInterval(poll, POLL_INTERVAL_MS);
 
     return () => {
-      supabase.removeChannel(channel);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
     };
   }, [jobIds]);
 
