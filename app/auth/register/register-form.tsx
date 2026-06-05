@@ -10,12 +10,7 @@ import { Label } from "@/components/ui/label";
 import { signUp } from "@/app/auth/actions";
 
 export function RegisterForm() {
-  const [state, action, pending] = useActionState(
-    async (_prev: { error?: string } | null, formData: FormData) => {
-      return signUp(formData);
-    },
-    null
-  );
+  const [state, action, pending] = useActionState(signUp, null);
 
   useEffect(() => {
     if (state?.error) {

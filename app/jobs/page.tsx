@@ -33,13 +33,13 @@ export default async function JobsPage({
           </div>
         }
       >
-        <JobList city={params.city} />
+        <JobList city={params.city} trade={params.trade} />
       </Suspense>
     </div>
   );
 }
 
-async function JobList({ city }: { city?: string }) {
+async function JobList({ city, trade }: { city?: string; trade?: string }) {
   const supabase = await createClient();
 
   let query = supabase
@@ -49,6 +49,10 @@ async function JobList({ city }: { city?: string }) {
 
   if (city) {
     query = query.eq("city", city);
+  }
+
+  if (trade) {
+    query = query.eq("trade_type", trade);
   }
 
   const { data: jobsRaw } = await query;

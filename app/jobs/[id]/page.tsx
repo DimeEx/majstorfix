@@ -1,9 +1,13 @@
 import { notFound } from "next/navigation";
-import { MapPin, Clock, Building2, DollarSign, Hammer, Calendar } from "lucide-react";
+import Link from "next/link";
+import { MapPin, Clock, Building2, DollarSign, Hammer, Calendar, Pencil } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { BidForm } from "@/components/bid/bid-form";
+import { OwnerBidPanel } from "@/components/bid/owner-bid-panel";
 import { JobBadges } from "@/components/jobs/job-badges";
-import type { Job } from "@/lib/supabase/types";
+import { ImageGallery } from "@/components/jobs/image-gallery";
+import { DeleteJobButton } from "@/components/jobs/delete-job-button";
+import type { Job, Bid, Rating, VerifiedHandyman } from "@/lib/supabase/types";
 
 export default async function JobDetailPage({
   params,
@@ -25,6 +29,41 @@ export default async function JobDetailPage({
     notFound();
   }
 
+  const { data: userData } = await supabase.auth.getUser();
+  const isOwner = userData.user !== null && job.owner_id === userData.user.id;
+
+  let bids: Bid[] = [];
+  let ratings: Rating[] = [];
+
+  if (isOwner) {
+    const { data: bidsRaw } = await supabase
+      .from("bids")
+      .select("*")
+      .eq("job_id", id)
+      .order("created_at", { ascending: false });
+
+    bids = (bidsRaw as Bid[]) ?? [];
+
+    if (bids.length > 0) {
+      const bidIds = bids.map((b) => b.id);
+      const { data: ratingsRaw } = await (supabase
+        .from("ratings") as any) // eslint-disable-line @typescript-eslint/no-explicit-any
+        .select("*")
+        .in("bid_id", bidIds);
+
+      ratings = (ratingsRaw as Rating[]) ?? [];
+    }
+  }
+
+  let verifiedPhones: string[] = [];
+  if (isOwner || !isOwner) {
+    const { data: verifiedRaw } = await supabase
+      .from("verified_handymen")
+      .select("phone");
+
+    verifiedPhones = ((verifiedRaw as VerifiedHandyman[]) ?? []).map((v) => v.phone);
+  }
+
   const urgencyLabel =
     job.urgency === "emergency" ? "Итно" :
     job.urgency === "few_days" ? "За 2-3 дена" :
@@ -44,14 +83,32 @@ export default async function JobDetailPage({
       <div className="mb-6">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="space-y-3 flex-1">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <MapPin className="h-4 w-4" />
-              <span>{job.city}{job.neighborhood ? `, ${job.neighborhood}` : ""}</span>
+            <div className="flex items-start justify-between gap-2">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <MapPin className="h-4 w-4" />
+                <span>{job.city}{job.neighborhood ? `, ${job.neighborhood}` : ""}</span>
+              </div>
+              {isOwner && (
+                <div className="flex items-center gap-2">
+                  <Link
+                    href={`/jobs/${job.id}/edit`}
+                    className="inline-flex h-7 items-center justify-center rounded-lg border border-border bg-background px-2 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                  >
+                    <Pencil className="h-3.5 w-3.5 mr-1" />
+                    Уреди
+                  </Link>
+                  <DeleteJobButton jobId={job.id} redirectTo="/dashboard" variant="outline" size="sm" />
+                </div>
+              )}
             </div>
 
             <p className="text-base leading-relaxed text-foreground">
               {job.description}
             </p>
+
+            {job.image_urls.length > 0 && (
+              <ImageGallery images={job.image_urls} />
+            )}
 
             <div className="flex flex-wrap gap-2">
               <JobBadges
@@ -59,6 +116,7 @@ export default async function JobDetailPage({
                 floor={job.floor}
                 hasElevator={job.has_elevator}
                 urgency={job.urgency}
+                tradeType={job.trade_type}
               />
             </div>
 
@@ -93,7 +151,11 @@ export default async function JobDetailPage({
       </div>
 
       <div className="border-t border-border/50 pt-6">
-        <BidForm jobId={job.id} />
+        {isOwner ? (
+          <OwnerBidPanel jobId={job.id} bids={bids} existingRatings={ratings} verifiedPhones={verifiedPhones} />
+        ) : (
+          <BidForm jobId={job.id} />
+        )}
       </div>
     </div>
   );

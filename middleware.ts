@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 
 const protectedPaths = ["/post-job", "/dashboard"];
 
-export async function proxy(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
 
   const supabase = createServerClient(
@@ -28,12 +28,12 @@ export async function proxy(request: NextRequest) {
   );
 
   const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    data: { session },
+  } = await supabase.auth.getSession();
 
   const pathname = request.nextUrl.pathname;
 
-  if (!user) {
+  if (!session) {
     if (protectedPaths.some((p) => pathname.startsWith(p))) {
       const url = request.nextUrl.clone();
       url.pathname = "/auth/login";
@@ -45,7 +45,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
-  ],
+  matcher: ["/post-job/:path*", "/dashboard/:path*"],
 };

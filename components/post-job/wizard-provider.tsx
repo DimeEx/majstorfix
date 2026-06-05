@@ -62,7 +62,6 @@ export function PostJobWizard() {
       }
 
       router.push("/jobs");
-      router.refresh();
     } catch {
       setSubmitError("Настана грешка при објавување. Обидете се повторно.");
     } finally {

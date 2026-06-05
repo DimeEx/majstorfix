@@ -21,6 +21,7 @@ export async function createJob(formData: FullJobInput) {
     description: parsed.data.description,
     city: parsed.data.city,
     neighborhood: parsed.data.neighborhood,
+    trade_type: parsed.data.trade_type,
     property_type: parsed.data.property_type,
     floor: parsed.data.floor ?? null,
     has_elevator: parsed.data.has_elevator ?? false,

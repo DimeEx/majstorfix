@@ -11,6 +11,7 @@ describe("Step 1: General Info", () => {
       city: "Skopje",
       neighborhood: "Centar",
       description: "My kitchen sink is leaking badly and needs fixing",
+      trade_type: "plumbing",
       images: ["https://example.com/photo.jpg"],
     });
     expect(result.success).toBe(true);
@@ -21,6 +22,7 @@ describe("Step 1: General Info", () => {
       city: "",
       neighborhood: "Centar",
       description: "Leaky faucet issue in the bathroom",
+      trade_type: "plumbing",
       images: ["https://example.com/photo.jpg"],
     });
     expect(result.success).toBe(false);
@@ -31,6 +33,7 @@ describe("Step 1: General Info", () => {
       city: "Skopje",
       neighborhood: "",
       description: "Leaky faucet issue in the bathroom",
+      trade_type: "plumbing",
       images: ["https://example.com/photo.jpg"],
     });
     expect(result.success).toBe(false);
@@ -41,6 +44,7 @@ describe("Step 1: General Info", () => {
       city: "Skopje",
       neighborhood: "Centar",
       description: "Short",
+      trade_type: "plumbing",
       images: ["https://example.com/photo.jpg"],
     });
     expect(result.success).toBe(false);
@@ -51,6 +55,7 @@ describe("Step 1: General Info", () => {
       city: "Skopje",
       neighborhood: "Centar",
       description: "Leaky faucet issue in the bathroom",
+      trade_type: "plumbing",
       images: [],
     });
     expect(result.success).toBe(true);
@@ -176,6 +181,7 @@ describe("Full Job Schema", () => {
       city: "Ohrid",
       neighborhood: "Varosh",
       description: "Need to install new electrical outlets in the living room",
+      trade_type: "electrical",
       images: ["https://example.com/electrical.jpg"],
       property_type: "apartment",
       floor: 2,

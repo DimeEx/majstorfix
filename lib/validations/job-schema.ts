@@ -12,11 +12,16 @@ export const completionTimeEnum = z.enum([
   "custom",
 ]);
 export const currencyEnum = z.enum(["MKD", "EUR"]);
+export const tradeTypeEnum = z.enum([
+  "plumbing", "electrical", "painting", "drywall", "tiling",
+  "flooring", "carpentry", "hvac", "construction", "other",
+]);
 
 export const stepGeneralInfoSchema = z.object({
   city: z.string().min(1, "Градот е задолжителен"),
   neighborhood: z.string().min(1, "Населбата е задолжителна"),
   description: z.string().min(10, "Опишете го проблемот подетално (мин. 10 карактери)"),
+  trade_type: tradeTypeEnum,
   images: z.array(z.string()).optional(),
 });
 

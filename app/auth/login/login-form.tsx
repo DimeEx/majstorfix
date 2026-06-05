@@ -1,23 +1,22 @@
 "use client";
 
 import { useActionState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
+import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { signIn } from "@/app/auth/actions";
 
+type SignInState = Awaited<ReturnType<typeof signIn>> | null;
+
 export function LoginForm() {
+  const router = useRouter();
   const searchParams = useSearchParams();
-  const [state, action, pending] = useActionState(
-    async (_prev: { error?: string } | null, formData: FormData) => {
-      return signIn(formData);
-    },
-    null
-  );
+  const [state, action, pending] = useActionState<SignInState>(signIn, null);
 
   useEffect(() => {
     if (searchParams.get("registered") === "true") {
@@ -26,10 +25,21 @@ export function LoginForm() {
   }, [searchParams]);
 
   useEffect(() => {
-    if (state?.error) {
+    if (state?.success) {
+      const initSession = async () => {
+        const supabase = createClient();
+        await supabase.auth.setSession({
+          access_token: state.accessToken,
+          refresh_token: state.refreshToken,
+        });
+        router.push("/");
+        router.refresh();
+      };
+      initSession();
+    } else if (state?.error) {
       toast.error(state.error);
     }
-  }, [state]);
+  }, [state, router]);
 
   return (
     <form action={action} className="space-y-4">

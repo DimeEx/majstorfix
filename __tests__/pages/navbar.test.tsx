@@ -2,15 +2,17 @@ import { render, screen } from "@testing-library/react";
 import { Navbar } from "@/components/shared/navbar";
 
 const mockRouter = { push: vi.fn(), refresh: vi.fn() };
+const mockPathname = vi.fn().mockReturnValue("/");
 
 vi.mock("next/navigation", () => ({
   useRouter: () => mockRouter,
+  usePathname: () => mockPathname(),
 }));
 
 vi.mock("@/lib/supabase/client", () => ({
   createClient: () => ({
     auth: {
-      getUser: () => Promise.resolve({ data: { user: null }, error: null }),
+      getSession: () => Promise.resolve({ data: { session: null }, error: null }),
       onAuthStateChange: () => ({ data: { subscription: { unsubscribe: vi.fn() } } }),
     },
   }),

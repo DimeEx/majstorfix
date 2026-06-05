@@ -18,6 +18,11 @@ interface CreateBidInput {
 export async function createBid(input: CreateBidInput) {
   const supabase = await createClient();
 
+  const { data: userData, error: userError } = await supabase.auth.getUser();
+  if (userError || !userData?.user) {
+    return { error: "Мора да бидете најавени за да испратите понуда." };
+  }
+
   const parsed = bidSchema.safeParse({
     handyman_phone: input.handyman_phone,
     price_labor_only: input.price_labor_only,

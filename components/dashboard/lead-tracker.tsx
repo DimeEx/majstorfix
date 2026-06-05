@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useActiveBids } from "@/hooks/use-active-bids";
+import { DeleteJobButton } from "@/components/jobs/delete-job-button";
 import type { Job } from "@/lib/supabase/types";
 
 interface LeadTrackerProps {
@@ -62,6 +63,7 @@ export function LeadTracker({ jobs, initialBidCounts }: LeadTrackerProps) {
                   <Badge variant="secondary">
                     {job.budget_min.toLocaleString()} - {job.budget_max.toLocaleString()} {job.currency}
                   </Badge>
+                  <DeleteJobButton jobId={job.id} variant="outline" size="icon-sm" className="text-muted-foreground hover:text-destructive" />
                 </div>
               </div>
             </CardHeader>

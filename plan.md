@@ -257,19 +257,31 @@ majstorfix/
 - **New DB columns** — Added `urgency_custom`, `completion_time`, `completion_time_custom`, `currency` to migration, types, tests, and insert payload
 - **Types alignment** — `Database` type updated to match Supabase's expected shape (`Relationships`, `Views`, `Functions`)
 - **Insert uses real `owner_id`** — Now passes `userData.user.id` instead of hardcoded `null`
-- **Auth pages** — Added `app/auth/login/page.tsx`, `app/auth/register/page.tsx`, `app/auth/confirm/page.tsx`, server actions (signUp/signIn/signOut), Supabase SSR middleware as `proxy.ts`, and navbar auth state (login/logout buttons)
+- **Auth pages** — Added `app/auth/login/page.tsx`, `app/auth/register/page.tsx`, `app/auth/confirm/page.tsx`, server actions (signUp/signIn/signOut), Supabase SSR middleware, and navbar auth state (login/logout buttons)
 - **Real data fetching** — `/jobs` fetches from Supabase with city filter, `/jobs/[id]` fetches single job with full details, `/dashboard` fetches user's own jobs with auth check
 - **Bid submission** — `BidForm` now inserts into Supabase `bids` table with loading state, toast feedback, and form reset
 - **Image upload** — `StepGeneralInfo` now uploads files to Supabase Storage (`job-images` bucket) with previews, upload progress, and stores returned URLs
 - **Server actions** — Created `lib/actions/create-job.ts` and `lib/actions/create-bid.ts`; wizard and bid form now use server actions instead of direct Supabase client calls
-- **Route protection** — `proxy.ts` redirects unauthenticated users from `/post-job` and `/dashboard` to `/auth/login`
+- **Route protection** — `middleware.ts` redirects unauthenticated users from `/post-job` and `/dashboard` to `/auth/login`
 - **Real-time quotes** — `useActiveBids` hook subscribes to Realtime INSERTs on `bids` table; dashboard shows live bid count badges per job
 - **Handyman profile** — `/profile` page with user email, registration date, and link to dashboard; navbar updated with "Моите" link and profile icon
+- **edit/delete job** — `update-job` and `delete-job` server actions; edit page at `/jobs/[id]/edit`; edit button on job detail; owner-only checks; RLS DELETE policy migration
+- **Trade type / category** — `trade_type` column (migration `00007`), `TradeType` type, `tradeTypeEnum` in Zod schema, select in wizard/edit-form/filters, `JobBadges` display, URL param filtering; all labels in Macedonian
+- **Select dropdown positioning** — Changed `alignItemWithTrigger` from `true` to `false` in `select.tsx` so menu always opens downward
+- **Fixed "Other" → "Друго"** — Passed computed Macedonian label as children to `<SelectValue>` in job-filters, step-general-info, edit-job-form
+- **ThemeProvider fix** — Added `<ThemeProvider>` from `next-themes` to root layout with `suppressHydrationWarning` on `<html>` (fixed Toaster crash)
+- **proxy.ts → middleware.ts** — Renamed to `middleware.ts` and exported as `middleware` function so Next.js actually invokes it
+- **Fixed emailRedirectTo** — Changed from `SUPABASE_URL/auth/confirm` to dynamic origin from `headers()` in signUp server action
+- **Optimized middleware** — Narrowed matcher to only `/post-job/:path*` and `/dashboard/:path*`; replaced `getUser()` with `getSession()` (no network call)
+- **Optimized Navbar** — Replaced `getUser()` with `getSession()` for initial auth state (reads from cookie, no API call)
+- **Removed redundant cache purges** — Removed `revalidatePath("/")` from signIn/signOut (redirect already triggers fresh render); removed `router.refresh()` after `router.push()` in edit-job-form and wizard-provider
+- **Fixed useActionState wrapping** — Server actions `signIn`/`signUp` now accept `_prev` as first param; forms pass them directly to `useActionState` instead of wrapping in anonymous functions (fixes `pending` state / loading spinner)
+- **Fixed client session sync** — `signIn` returns `accessToken`/`refreshToken`; login form calls `supabase.auth.setSession()` on the browser client to initialize the non-HttpOnly cookie so the Navbar detects the logged-in state
 
 ### Test Coverage
-- **13 test files · 62 tests — all passing**
+- **22 test files · 128 tests — all passing**
 - `npm test` — Vitest runner (4.1.8)
-- `npm run build` — Full Next.js production build + TypeScript check
+- Tests cover: UI components, Supabase types/migrations/storage, Zod validation, pages (navbar, home, dashboard, post-job), server actions (create/update/delete job, create bid), job card/badges/components, image gallery, owner bid panel, star rating
 
 ### Complete (MVP)
 All features from the initial plan are implemented. The core MVP flow works:

@@ -3,6 +3,7 @@ export type MaterialStatus = "buyer_provides" | "handyman_provides" | "negotiabl
 export type Urgency = "emergency" | "few_days" | "flexible" | "custom";
 export type CompletionTime = "1-2_hours" | "3-4_hours" | "5-8_hours" | "1-2_days" | "3+_days" | "custom";
 export type Currency = "MKD" | "EUR";
+export type TradeType = "plumbing" | "electrical" | "painting" | "drywall" | "tiling" | "flooring" | "carpentry" | "hvac" | "construction" | "other";
 
 export interface Job {
   id: string;
@@ -22,6 +23,7 @@ export interface Job {
   currency: Currency;
   budget_min: number;
   budget_max: number;
+  trade_type: TradeType;
   image_urls: string[];
   owner_id: string | null;
   created_at: string;
@@ -40,6 +42,22 @@ export interface Bid {
   created_at: string;
 }
 
+export interface VerifiedHandyman {
+  phone: string;
+  created_at: string;
+}
+
+export interface Rating {
+  id: string;
+  bid_id: string;
+  job_id: string;
+  reviewer_id: string;
+  handyman_phone: string;
+  rating: number;
+  comment: string | null;
+  created_at: string;
+}
+
 export type Database = {
   public: {
     Tables: {
@@ -53,6 +71,18 @@ export type Database = {
         Row: Bid;
         Insert: Omit<Bid, "id" | "created_at">;
         Update: Partial<Omit<Bid, "id" | "created_at">>;
+        Relationships: [];
+      };
+      ratings: {
+        Row: Rating;
+        Insert: Omit<Rating, "id" | "created_at">;
+        Update: Partial<Omit<Rating, "id" | "created_at">>;
+        Relationships: [];
+      };
+      verified_handymen: {
+        Row: VerifiedHandyman;
+        Insert: Omit<VerifiedHandyman, "created_at">;
+        Update: Partial<Omit<VerifiedHandyman, "created_at">>;
         Relationships: [];
       };
     };

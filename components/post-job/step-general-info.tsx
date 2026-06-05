@@ -4,14 +4,14 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Loader2, X, Image as ImageIcon } from "lucide-react";
+import { Loader2, X, Image as ImageIcon, MapPin, Home, FileText, Wrench } from "lucide-react";
 import { toast } from "sonner";
 import { stepGeneralInfoSchema, type StepGeneralInfo } from "@/lib/validations/job-schema";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Field, FieldLabel, FieldContent, FieldError } from "@/components/ui/field";
-import { MapPin, Home, FileText } from "lucide-react";
 import { uploadJobImages } from "@/lib/supabase/storage";
 
 interface StepGeneralInfoProps {
@@ -24,12 +24,31 @@ export function StepGeneralInfo({ onNext }: StepGeneralInfoProps) {
 
   const {
     register,
+    setValue,
+    watch,
     handleSubmit,
     formState: { errors, isValid },
   } = useForm<StepGeneralInfo>({
     resolver: zodResolver(stepGeneralInfoSchema),
+    defaultValues: { trade_type: "other" },
     mode: "onBlur",
   });
+
+  const tradeOptions = [
+    { value: "plumbing", label: "Водовод" },
+    { value: "electrical", label: "Струја" },
+    { value: "painting", label: "Молер / Фарбање" },
+    { value: "drywall", label: "Гипсар" },
+    { value: "tiling", label: "Плочки" },
+    { value: "flooring", label: "Паркет / Подови" },
+    { value: "carpentry", label: "Столарија" },
+    { value: "hvac", label: "Греење / Клима" },
+    { value: "construction", label: "Градежништво" },
+    { value: "other", label: "Друго" },
+  ];
+
+  const selectedTradeType = watch("trade_type");
+  const selectedTradeLabel = tradeOptions.find((t) => t.value === selectedTradeType)?.label ?? null;
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = Array.from(e.target.files ?? []);
@@ -55,6 +74,29 @@ export function StepGeneralInfo({ onNext }: StepGeneralInfoProps) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <Field>
+        <FieldLabel className="flex items-center gap-2 text-sm">
+          <Wrench className="h-4 w-4 text-primary" />
+          Категорија
+        </FieldLabel>
+        <FieldContent>
+          <Select
+            defaultValue="other"
+            onValueChange={(val) => setValue("trade_type", val as StepGeneralInfo["trade_type"])}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Изберете категорија">{selectedTradeLabel}</SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              {tradeOptions.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <FieldError errors={errors.trade_type ? [errors.trade_type] : undefined} />
+        </FieldContent>
+      </Field>
+
       <div className="grid gap-6 sm:grid-cols-2">
         <Field>
           <FieldLabel className="flex items-center gap-2 text-sm">

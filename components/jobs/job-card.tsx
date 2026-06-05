@@ -25,6 +25,7 @@ export function JobCard({ job }: JobCardProps) {
                 floor={job.floor}
                 hasElevator={job.has_elevator}
                 urgency={job.urgency}
+                tradeType={job.trade_type}
               />
             </div>
             <div className="shrink-0 text-right">
