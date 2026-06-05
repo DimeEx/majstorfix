@@ -23,8 +23,7 @@ export async function uploadJobImages(
       });
 
     if (error) {
-      console.error("Upload error:", error.message);
-      continue;
+      throw new Error(`Грешка при прикачување на слика: ${error.message}`);
     }
 
     const { data: publicUrl } = supabase.storage

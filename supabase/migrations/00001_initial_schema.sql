@@ -6,14 +6,33 @@
 -- ============================================
 
 -- Create Enum Types for cleaner state management
-CREATE TYPE property_enum AS ENUM ('house', 'apartment');
-CREATE TYPE material_enum AS ENUM ('buyer_provides', 'handyman_provides', 'negotiable');
-CREATE TYPE urgency_enum AS ENUM ('emergency', 'few_days', 'flexible', 'custom');
-CREATE TYPE completion_time_enum AS ENUM ('1-2_hours', '3-4_hours', '5-8_hours', '1-2_days', '3+_days', 'custom');
-CREATE TYPE currency_enum AS ENUM ('MKD', 'EUR');
+DO $$ BEGIN
+  CREATE TYPE property_enum AS ENUM ('house', 'apartment');
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+
+DO $$ BEGIN
+  CREATE TYPE material_enum AS ENUM ('buyer_provides', 'handyman_provides', 'negotiable');
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+
+DO $$ BEGIN
+  CREATE TYPE urgency_enum AS ENUM ('emergency', 'few_days', 'flexible', 'custom');
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+
+DO $$ BEGIN
+  CREATE TYPE completion_time_enum AS ENUM ('1-2_hours', '3-4_hours', '5-8_hours', '1-2_days', '3+_days', 'custom');
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+
+DO $$ BEGIN
+  CREATE TYPE currency_enum AS ENUM ('MKD', 'EUR');
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 -- 1. Create the Main Jobs Table
-CREATE TABLE jobs (
+CREATE TABLE IF NOT EXISTS jobs (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     description TEXT NOT NULL,
     city TEXT NOT NULL,
@@ -36,8 +55,29 @@ CREATE TABLE jobs (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
 
+-- Ensure ALL columns exist (table may have been created without them)
+ALTER TABLE jobs ADD COLUMN IF NOT EXISTS description TEXT NOT NULL DEFAULT '';
+ALTER TABLE jobs ADD COLUMN IF NOT EXISTS city TEXT NOT NULL DEFAULT '';
+ALTER TABLE jobs ADD COLUMN IF NOT EXISTS neighborhood TEXT NOT NULL DEFAULT '';
+ALTER TABLE jobs ADD COLUMN IF NOT EXISTS property_type property_enum NOT NULL DEFAULT 'house';
+ALTER TABLE jobs ADD COLUMN IF NOT EXISTS floor INT DEFAULT NULL;
+ALTER TABLE jobs ADD COLUMN IF NOT EXISTS has_elevator BOOLEAN DEFAULT FALSE;
+ALTER TABLE jobs ADD COLUMN IF NOT EXISTS is_occupied BOOLEAN DEFAULT TRUE;
+ALTER TABLE jobs ADD COLUMN IF NOT EXISTS material_status material_enum NOT NULL DEFAULT 'negotiable';
+ALTER TABLE jobs ADD COLUMN IF NOT EXISTS urgency urgency_enum NOT NULL DEFAULT 'flexible';
+ALTER TABLE jobs ADD COLUMN IF NOT EXISTS urgency_custom TEXT DEFAULT NULL;
+ALTER TABLE jobs ADD COLUMN IF NOT EXISTS completion_time completion_time_enum NOT NULL DEFAULT '1-2_hours';
+ALTER TABLE jobs ADD COLUMN IF NOT EXISTS completion_time_custom TEXT DEFAULT NULL;
+ALTER TABLE jobs ADD COLUMN IF NOT EXISTS active_days INT NOT NULL DEFAULT 3;
+ALTER TABLE jobs ADD COLUMN IF NOT EXISTS currency currency_enum NOT NULL DEFAULT 'MKD';
+ALTER TABLE jobs ADD COLUMN IF NOT EXISTS budget_min INT NOT NULL DEFAULT 0;
+ALTER TABLE jobs ADD COLUMN IF NOT EXISTS budget_max INT NOT NULL DEFAULT 0;
+ALTER TABLE jobs ADD COLUMN IF NOT EXISTS image_urls TEXT[] NOT NULL DEFAULT '{}';
+ALTER TABLE jobs ADD COLUMN IF NOT EXISTS owner_id UUID;
+ALTER TABLE jobs ADD COLUMN IF NOT EXISTS created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL;
+
 -- 2. Create the Bids Table
-CREATE TABLE bids (
+CREATE TABLE IF NOT EXISTS bids (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     job_id UUID REFERENCES jobs(id) ON DELETE CASCADE NOT NULL,
     handyman_phone TEXT NOT NULL,
@@ -49,39 +89,44 @@ CREATE TABLE bids (
 );
 
 -- Indexes for common queries
-CREATE INDEX idx_jobs_city ON jobs(city);
-CREATE INDEX idx_jobs_urgency ON jobs(urgency);
-CREATE INDEX idx_jobs_created_at ON jobs(created_at DESC);
-CREATE INDEX idx_bids_job_id ON bids(job_id);
+CREATE INDEX IF NOT EXISTS idx_jobs_city ON jobs(city);
+CREATE INDEX IF NOT EXISTS idx_jobs_urgency ON jobs(urgency);
+CREATE INDEX IF NOT EXISTS idx_jobs_created_at ON jobs(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_bids_job_id ON bids(job_id);
 
 -- Row Level Security
 ALTER TABLE jobs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE bids ENABLE ROW LEVEL SECURITY;
 
 -- Everyone can read active jobs
-CREATE POLICY "Anyone can view jobs"
-    ON jobs FOR SELECT
-    USING (true);
+DO $$ BEGIN
+  CREATE POLICY "Anyone can view jobs" ON jobs FOR SELECT USING (true);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 -- Authenticated users can create jobs
-CREATE POLICY "Authenticated users can create jobs"
-    ON jobs FOR INSERT
-    WITH CHECK (auth.role() = 'authenticated');
+DO $$ BEGIN
+  CREATE POLICY "Authenticated users can create jobs" ON jobs FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 -- Job owners can update their jobs
-CREATE POLICY "Job owners can update their jobs"
-    ON jobs FOR UPDATE
-    USING (auth.uid() = owner_id);
+DO $$ BEGIN
+  CREATE POLICY "Job owners can update their jobs" ON jobs FOR UPDATE USING (auth.uid() = owner_id);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 -- Anyone can view bids on a job
-CREATE POLICY "Anyone can view bids"
-    ON bids FOR SELECT
-    USING (true);
+DO $$ BEGIN
+  CREATE POLICY "Anyone can view bids" ON bids FOR SELECT USING (true);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 -- Authenticated users can create bids
-CREATE POLICY "Authenticated users can create bids"
-    ON bids FOR INSERT
-    WITH CHECK (auth.role() = 'authenticated');
+DO $$ BEGIN
+  CREATE POLICY "Authenticated users can create bids" ON bids FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 -- ============================================
 -- DOWN

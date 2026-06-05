@@ -26,12 +26,12 @@ export function RegisterForm() {
   return (
     <form action={action} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
+        <Label htmlFor="email">Е-пошта</Label>
         <Input
           id="email"
           name="email"
           type="email"
-          placeholder="your@email.com"
+          placeholder="вашиот@email.com"
           required
           autoComplete="email"
         />

@@ -8,7 +8,10 @@
 -- UP
 -- ============================================
 
-ALTER PUBLICATION supabase_realtime ADD TABLE bids;
+DO $$ BEGIN
+  ALTER PUBLICATION supabase_realtime ADD TABLE bids;
+EXCEPTION WHEN duplicate_table THEN NULL;
+END $$;
 
 -- ============================================
 -- DOWN
