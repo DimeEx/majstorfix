@@ -24,16 +24,18 @@ export default async function DashboardPage() {
 
   let initialBidCounts: Record<string, number> = {};
   if (jobIds.length > 0) {
-    const { data: bidsRaw } = await (supabase
-      .from("bids") as any)
+    const { data: bidsRaw } = await (supabase.from("bids") as any)
       .select("job_id")
       .in("job_id", jobIds);
 
     const bids = bidsRaw as Pick<Bid, "job_id">[] | null;
-    initialBidCounts = (bids ?? []).reduce<Record<string, number>>((acc, bid) => {
-      acc[bid.job_id] = (acc[bid.job_id] ?? 0) + 1;
-      return acc;
-    }, {});
+    initialBidCounts = (bids ?? []).reduce<Record<string, number>>(
+      (acc, bid) => {
+        acc[bid.job_id] = (acc[bid.job_id] ?? 0) + 1;
+        return acc;
+      },
+      {},
+    );
   }
 
   return (

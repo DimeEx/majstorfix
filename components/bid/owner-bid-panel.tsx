@@ -20,7 +20,12 @@ interface OwnerBidPanelProps {
   verifiedPhones: string[];
 }
 
-export function OwnerBidPanel({ jobId, bids, existingRatings, verifiedPhones }: OwnerBidPanelProps) {
+export function OwnerBidPanel({
+  jobId,
+  bids,
+  existingRatings,
+  verifiedPhones,
+}: OwnerBidPanelProps) {
   const ratingsMap = useMemo(() => {
     const map: Record<string, Rating> = {};
     for (const r of existingRatings) {
@@ -33,36 +38,39 @@ export function OwnerBidPanel({ jobId, bids, existingRatings, verifiedPhones }: 
   const [submitting, setSubmitting] = useState<Record<string, boolean>>({});
   const [submitted, setSubmitted] = useState<Record<string, boolean>>({});
 
-  const handleRate = useCallback(async (bid: Bid) => {
-    const rating = ratingValues[bid.id];
-    if (!rating) {
-      toast.error("Изберете оценка од 1 до 5.");
-      return;
-    }
-
-    setSubmitting((prev) => ({ ...prev, [bid.id]: true }));
-    try {
-      const result = await createRating({
-        bid_id: bid.id,
-        job_id: jobId,
-        handyman_phone: bid.handyman_phone,
-        rating,
-        comment: comments[bid.id] ?? undefined,
-      });
-
-      if (result?.error) {
-        toast.error(result.error);
+  const handleRate = useCallback(
+    async (bid: Bid) => {
+      const rating = ratingValues[bid.id];
+      if (!rating) {
+        toast.error("Изберете оценка од 1 до 5.");
         return;
       }
 
-      toast.success("Оценката е зачувана!");
-      setSubmitted((prev) => ({ ...prev, [bid.id]: true }));
-    } catch {
-      toast.error("Настана грешка. Обидете се повторно.");
-    } finally {
-      setSubmitting((prev) => ({ ...prev, [bid.id]: false }));
-    }
-  }, [ratingValues, comments, jobId]);
+      setSubmitting((prev) => ({ ...prev, [bid.id]: true }));
+      try {
+        const result = await createRating({
+          bid_id: bid.id,
+          job_id: jobId,
+          handyman_phone: bid.handyman_phone,
+          rating,
+          comment: comments[bid.id] ?? undefined,
+        });
+
+        if (result?.error) {
+          toast.error(result.error);
+          return;
+        }
+
+        toast.success("Оценката е зачувана!");
+        setSubmitted((prev) => ({ ...prev, [bid.id]: true }));
+      } catch {
+        toast.error("Настана грешка. Обидете се повторно.");
+      } finally {
+        setSubmitting((prev) => ({ ...prev, [bid.id]: false }));
+      }
+    },
+    [ratingValues, comments, jobId],
+  );
 
   if (bids.length === 0) {
     return (
@@ -71,7 +79,7 @@ export function OwnerBidPanel({ jobId, bids, existingRatings, verifiedPhones }: 
           <CardTitle>Понуди</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             Сè уште нема понуди за оваа работа.
           </p>
         </CardContent>
@@ -99,31 +107,44 @@ export function OwnerBidPanel({ jobId, bids, existingRatings, verifiedPhones }: 
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
                       {isVerified && (
-                        <Badge variant="secondary" className="gap-1 bg-green-50 text-green-700 border-green-200 dark:bg-green-950 dark:text-green-400 dark:border-green-800">
+                        <Badge
+                          variant="secondary"
+                          className="gap-1 border-green-200 bg-green-50 text-green-700 dark:border-green-800 dark:bg-green-950 dark:text-green-400"
+                        >
                           <ShieldCheck className="h-3 w-3" />
                           Верификуван
                         </Badge>
                       )}
                       <span className="text-sm font-medium">Само работа:</span>
-                      <span className="text-sm">{bid.price_labor_only.toLocaleString()} MKD</span>
+                      <span className="text-sm">
+                        {bid.price_labor_only.toLocaleString()} MKD
+                      </span>
                       {bid.price_labor_only_eur && (
-                        <span className="text-xs text-muted-foreground">({bid.price_labor_only_eur} EUR)</span>
+                        <span className="text-muted-foreground text-xs">
+                          ({bid.price_labor_only_eur} EUR)
+                        </span>
                       )}
                     </div>
                     {bid.price_with_materials && (
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium">Со материјали:</span>
-                        <span className="text-sm">{bid.price_with_materials.toLocaleString()} MKD</span>
+                        <span className="text-sm font-medium">
+                          Со материјали:
+                        </span>
+                        <span className="text-sm">
+                          {bid.price_with_materials.toLocaleString()} MKD
+                        </span>
                         {bid.price_with_materials_eur && (
-                          <span className="text-xs text-muted-foreground">({bid.price_with_materials_eur} EUR)</span>
+                          <span className="text-muted-foreground text-xs">
+                            ({bid.price_with_materials_eur} EUR)
+                          </span>
                         )}
                       </div>
                     )}
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <div className="text-muted-foreground flex items-center gap-2 text-xs">
                       <span>Достапен од: {bid.availability_date}</span>
                     </div>
                     {bid.notes && (
-                      <p className="text-xs text-muted-foreground italic">
+                      <p className="text-muted-foreground text-xs italic">
                         &ldquo;{bid.notes}&rdquo;
                       </p>
                     )}
@@ -132,30 +153,47 @@ export function OwnerBidPanel({ jobId, bids, existingRatings, verifiedPhones }: 
                 </div>
 
                 {isSubmitted && existingRating ? (
-                  <div className="flex items-center gap-3 rounded-lg bg-muted/30 p-3">
+                  <div className="bg-muted/30 flex items-center gap-3 rounded-lg p-3">
                     <CheckCircle className="h-4 w-4 text-green-600" />
-                    <StarRating value={existingRating.rating} readOnly size={16} />
+                    <StarRating
+                      value={existingRating.rating}
+                      readOnly
+                      size={16}
+                    />
                     {existingRating.comment && (
-                      <span className="text-xs text-muted-foreground">&ldquo;{existingRating.comment}&rdquo;</span>
+                      <span className="text-muted-foreground text-xs">
+                        &ldquo;{existingRating.comment}&rdquo;
+                      </span>
                     )}
-                    <span className="text-xs text-muted-foreground">Оценето</span>
+                    <span className="text-muted-foreground text-xs">
+                      Оценето
+                    </span>
                   </div>
                 ) : isSubmitted ? (
-                  <div className="flex items-center gap-2 rounded-lg bg-muted/30 p-3">
+                  <div className="bg-muted/30 flex items-center gap-2 rounded-lg p-3">
                     <CheckCircle className="h-4 w-4 text-green-600" />
-                    <span className="text-xs text-muted-foreground">Оценката е зачувана</span>
+                    <span className="text-muted-foreground text-xs">
+                      Оценката е зачувана
+                    </span>
                   </div>
                 ) : (
-                  <div className="space-y-2 rounded-lg bg-muted/20 p-3">
+                  <div className="bg-muted/20 space-y-2 rounded-lg p-3">
                     <StarRating
                       value={ratingValues[bid.id] ?? 0}
-                      onChange={(v) => setRatingValues((prev) => ({ ...prev, [bid.id]: v }))}
+                      onChange={(v) =>
+                        setRatingValues((prev) => ({ ...prev, [bid.id]: v }))
+                      }
                     />
                     <Textarea
                       placeholder="Коментар (опционално)"
                       className="min-h-[60px] text-sm"
                       value={comments[bid.id] ?? ""}
-                      onChange={(e) => setComments((prev) => ({ ...prev, [bid.id]: e.target.value }))}
+                      onChange={(e) =>
+                        setComments((prev) => ({
+                          ...prev,
+                          [bid.id]: e.target.value,
+                        }))
+                      }
                     />
                     <Button
                       size="sm"

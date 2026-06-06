@@ -38,7 +38,7 @@ export default async function EditJobPage({
     <div className="container mx-auto max-w-2xl px-4 py-8">
       <Link
         href={`/jobs/${id}`}
-        className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6"
+        className="text-muted-foreground hover:text-foreground mb-6 inline-flex items-center gap-1 text-sm transition-colors"
       >
         <ArrowLeft className="h-4 w-4" />
         Назад кон огласот
@@ -46,7 +46,7 @@ export default async function EditJobPage({
 
       <h1 className="mb-6 text-2xl font-bold">Уреди работа</h1>
 
-      <div className="bg-card rounded-2xl border border-border/50 shadow-sm shadow-border/50 p-6 sm:p-8">
+      <div className="bg-card border-border/50 shadow-border/50 rounded-2xl border p-6 shadow-sm sm:p-8">
         <EditJobForm job={job} />
       </div>
     </div>

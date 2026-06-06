@@ -9,7 +9,7 @@ function isSupabaseStorageUrl(url: string): RegExpMatchArray | null {
 
 export function getOptimizedImageUrl(
   url: string,
-  options: { width?: number; height?: number; quality?: number } = {}
+  options: { width?: number; height?: number; quality?: number } = {},
 ): string {
   const match = isSupabaseStorageUrl(url);
   if (!match) return url;
@@ -22,7 +22,7 @@ export function getOptimizedImageUrl(
 
   const baseUrl = url.replace(
     /\/storage\/v1\/object\/public\//,
-    "/storage/v1/render/image/public/"
+    "/storage/v1/render/image/public/",
   );
 
   const queryString = params.toString();
@@ -39,7 +39,7 @@ export function getLightboxUrl(url: string): string {
 
 export async function uploadJobImages(
   files: File[],
-  jobId?: string
+  jobId?: string,
 ): Promise<string[]> {
   if (files.length === 0) return [];
 

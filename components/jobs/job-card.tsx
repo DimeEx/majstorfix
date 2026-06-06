@@ -14,11 +14,14 @@ export function JobCard({ job }: JobCardProps) {
         <CardContent className="p-4">
           <div className="flex items-start justify-between gap-2">
             <div className="flex-1 space-y-2">
-              <p className="line-clamp-2 text-sm text-muted-foreground">
+              <p className="text-muted-foreground line-clamp-2 text-sm">
                 {job.description}
               </p>
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <span>{job.city}{job.neighborhood ? `, ${job.neighborhood}` : ""}</span>
+              <div className="text-muted-foreground flex items-center gap-2 text-xs">
+                <span>
+                  {job.city}
+                  {job.neighborhood ? `, ${job.neighborhood}` : ""}
+                </span>
               </div>
               <JobBadges
                 propertyType={job.property_type}
@@ -30,7 +33,8 @@ export function JobCard({ job }: JobCardProps) {
             </div>
             <div className="shrink-0 text-right">
               <p className="font-semibold whitespace-nowrap">
-                {job.budget_min.toLocaleString()} - {job.budget_max.toLocaleString()} {job.currency}
+                {job.budget_min.toLocaleString()} -{" "}
+                {job.budget_max.toLocaleString()} {job.currency}
               </p>
             </div>
           </div>

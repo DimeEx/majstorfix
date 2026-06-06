@@ -11,7 +11,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Field, FieldLabel, FieldContent, FieldError, FieldGroup } from "@/components/ui/field";
+import {
+  Field,
+  FieldLabel,
+  FieldContent,
+  FieldError,
+  FieldGroup,
+} from "@/components/ui/field";
 import { createBid } from "@/lib/actions/create-bid";
 
 interface BidFormProps {
@@ -27,7 +33,7 @@ export function BidForm({ jobId }: BidFormProps) {
     formState: { errors, isValid },
   } = useForm<z.output<typeof bidSchema>>({
     resolver: zodResolver(bidSchema),
-    mode: "onBlur",
+    mode: "onChange",
   });
 
   const onSubmit = async (data: z.output<typeof bidSchema>) => {
@@ -70,15 +76,38 @@ export function BidForm({ jobId }: BidFormProps) {
               <Field>
                 <FieldLabel>Само работа (MKD)</FieldLabel>
                 <FieldContent>
-                  <Input type="number" min={1} placeholder="Пр. 3000" {...register("price_labor_only")} />
-                  <FieldError errors={errors.price_labor_only ? [errors.price_labor_only] : undefined} />
+                  <Input
+                    type="number"
+                    min={1}
+                    placeholder="Пр. 3000"
+                    {...register("price_labor_only")}
+                  />
+                  <FieldError
+                    errors={
+                      errors.price_labor_only
+                        ? [errors.price_labor_only]
+                        : undefined
+                    }
+                  />
                 </FieldContent>
               </Field>
               <Field>
                 <FieldLabel>Само работа (EUR)</FieldLabel>
                 <FieldContent>
-                  <Input type="number" min={0} step="0.01" placeholder="Пр. 50" {...register("price_labor_only_eur")} />
-                  <FieldError errors={errors.price_labor_only_eur ? [errors.price_labor_only_eur] : undefined} />
+                  <Input
+                    type="number"
+                    min={0}
+                    step="0.01"
+                    placeholder="Пр. 50"
+                    {...register("price_labor_only_eur")}
+                  />
+                  <FieldError
+                    errors={
+                      errors.price_labor_only_eur
+                        ? [errors.price_labor_only_eur]
+                        : undefined
+                    }
+                  />
                 </FieldContent>
               </Field>
             </div>
@@ -87,15 +116,38 @@ export function BidForm({ jobId }: BidFormProps) {
               <Field>
                 <FieldLabel>Со материјали (MKD)</FieldLabel>
                 <FieldContent>
-                  <Input type="number" min={1} placeholder="Пр. 5000" {...register("price_with_materials")} />
-                  <FieldError errors={errors.price_with_materials ? [errors.price_with_materials] : undefined} />
+                  <Input
+                    type="number"
+                    min={1}
+                    placeholder="Пр. 5000"
+                    {...register("price_with_materials")}
+                  />
+                  <FieldError
+                    errors={
+                      errors.price_with_materials
+                        ? [errors.price_with_materials]
+                        : undefined
+                    }
+                  />
                 </FieldContent>
               </Field>
               <Field>
                 <FieldLabel>Со материјали (EUR)</FieldLabel>
                 <FieldContent>
-                  <Input type="number" min={0} step="0.01" placeholder="Пр. 80" {...register("price_with_materials_eur")} />
-                  <FieldError errors={errors.price_with_materials_eur ? [errors.price_with_materials_eur] : undefined} />
+                  <Input
+                    type="number"
+                    min={0}
+                    step="0.01"
+                    placeholder="Пр. 80"
+                    {...register("price_with_materials_eur")}
+                  />
+                  <FieldError
+                    errors={
+                      errors.price_with_materials_eur
+                        ? [errors.price_with_materials_eur]
+                        : undefined
+                    }
+                  />
                 </FieldContent>
               </Field>
             </div>
@@ -104,8 +156,15 @@ export function BidForm({ jobId }: BidFormProps) {
           <Field>
             <FieldLabel>Телефон</FieldLabel>
             <FieldContent>
-              <Input placeholder="+38970123456" {...register("handyman_phone")} />
-              <FieldError errors={errors.handyman_phone ? [errors.handyman_phone] : undefined} />
+              <Input
+                placeholder="+38970123456"
+                {...register("handyman_phone")}
+              />
+              <FieldError
+                errors={
+                  errors.handyman_phone ? [errors.handyman_phone] : undefined
+                }
+              />
             </FieldContent>
           </Field>
 
@@ -113,19 +172,32 @@ export function BidForm({ jobId }: BidFormProps) {
             <FieldLabel>Датум на достапност</FieldLabel>
             <FieldContent>
               <Input type="date" {...register("availability_date")} />
-              <FieldError errors={errors.availability_date ? [errors.availability_date] : undefined} />
+              <FieldError
+                errors={
+                  errors.availability_date
+                    ? [errors.availability_date]
+                    : undefined
+                }
+              />
             </FieldContent>
           </Field>
 
           <Field>
             <FieldLabel>Забелешка (опционално)</FieldLabel>
             <FieldContent>
-              <Textarea placeholder="Пр. Можам да дојдам само претпладне" {...register("notes")} />
+              <Textarea
+                placeholder="Пр. Можам да дојдам само претпладне"
+                {...register("notes")}
+              />
               <FieldError errors={errors.notes ? [errors.notes] : undefined} />
             </FieldContent>
           </Field>
 
-          <Button type="submit" disabled={!isValid || submitting} className="w-full">
+          <Button
+            type="submit"
+            disabled={!isValid || submitting}
+            className="w-full"
+          >
             {submitting ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />

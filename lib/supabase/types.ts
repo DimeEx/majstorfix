@@ -1,9 +1,28 @@
 export type PropertyType = "house" | "apartment";
-export type MaterialStatus = "buyer_provides" | "handyman_provides" | "negotiable";
+export type MaterialStatus =
+  | "buyer_provides"
+  | "handyman_provides"
+  | "negotiable";
 export type Urgency = "emergency" | "few_days" | "flexible" | "custom";
-export type CompletionTime = "1-2_hours" | "3-4_hours" | "5-8_hours" | "1-2_days" | "3+_days" | "custom";
+export type CompletionTime =
+  | "1-2_hours"
+  | "3-4_hours"
+  | "5-8_hours"
+  | "1-2_days"
+  | "3+_days"
+  | "custom";
 export type Currency = "MKD" | "EUR";
-export type TradeType = "plumbing" | "electrical" | "painting" | "drywall" | "tiling" | "flooring" | "carpentry" | "hvac" | "construction" | "other";
+export type TradeType =
+  | "plumbing"
+  | "electrical"
+  | "painting"
+  | "drywall"
+  | "tiling"
+  | "flooring"
+  | "carpentry"
+  | "hvac"
+  | "construction"
+  | "other";
 
 export interface Job {
   id: string;

@@ -2,7 +2,14 @@ import { readFileSync } from "fs";
 import { join } from "path";
 
 describe("Database Migration", () => {
-  const migrationPath = join(__dirname, "..", "..", "supabase", "migrations", "00001_initial_schema.sql");
+  const migrationPath = join(
+    __dirname,
+    "..",
+    "..",
+    "supabase",
+    "migrations",
+    "00001_initial_schema.sql",
+  );
   let sql: string;
 
   beforeAll(() => {
@@ -59,8 +66,12 @@ describe("Database Migration", () => {
 
   it("creates RLS policies", () => {
     expect(sql).toContain(`CREATE POLICY "Anyone can view jobs"`);
-    expect(sql).toContain(`CREATE POLICY "Authenticated users can create jobs"`);
+    expect(sql).toContain(
+      `CREATE POLICY "Authenticated users can create jobs"`,
+    );
     expect(sql).toContain(`CREATE POLICY "Anyone can view bids"`);
-    expect(sql).toContain(`CREATE POLICY "Authenticated users can create bids"`);
+    expect(sql).toContain(
+      `CREATE POLICY "Authenticated users can create bids"`,
+    );
   });
 });

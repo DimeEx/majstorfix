@@ -34,8 +34,7 @@ export async function updateJob(jobId: string, formData: FullJobInput) {
     return { error: "Проверете ги внесените податоци." };
   }
 
-  const { error } = await supabase
-    .from("jobs")
+  const { error } = await (supabase.from("jobs") as any)
     .update({
       description: parsed.data.description,
       city: parsed.data.city,

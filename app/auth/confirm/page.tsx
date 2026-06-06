@@ -5,7 +5,7 @@ export default function ConfirmPage() {
         <h1 className="font-heading text-2xl font-medium">
           Проверете го вашиот email
         </h1>
-        <p className="mt-4 text-sm text-muted-foreground">
+        <p className="text-muted-foreground mt-4 text-sm">
           Ви испративме линк за потврда на вашата email адреса.
           <br />
           Кликнете на линкот за да го активирате вашиот профил.

@@ -12,8 +12,11 @@ vi.mock("next/navigation", () => ({
 vi.mock("@/lib/supabase/client", () => ({
   createClient: () => ({
     auth: {
-      getSession: () => Promise.resolve({ data: { session: null }, error: null }),
-      onAuthStateChange: () => ({ data: { subscription: { unsubscribe: vi.fn() } } }),
+      getSession: () =>
+        Promise.resolve({ data: { session: null }, error: null }),
+      onAuthStateChange: () => ({
+        data: { subscription: { unsubscribe: vi.fn() } },
+      }),
     },
   }),
 }));
@@ -32,9 +35,18 @@ describe("Navbar", () => {
 
   it("has correct hrefs", () => {
     render(<Navbar />);
-    expect(screen.getByText("MajstorFix").closest("a")).toHaveAttribute("href", "/");
-    expect(screen.getByText("Работи").closest("a")).toHaveAttribute("href", "/jobs");
-    expect(screen.getByText("Објави работа").closest("a")).toHaveAttribute("href", "/post-job");
+    expect(screen.getByText("MajstorFix").closest("a")).toHaveAttribute(
+      "href",
+      "/",
+    );
+    expect(screen.getByText("Работи").closest("a")).toHaveAttribute(
+      "href",
+      "/jobs",
+    );
+    expect(screen.getByText("Објави работа").closest("a")).toHaveAttribute(
+      "href",
+      "/post-job",
+    );
   });
 
   it("shows login button when not authenticated", async () => {

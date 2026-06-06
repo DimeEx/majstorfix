@@ -6,8 +6,8 @@ describe("Home Page", () => {
     render(<Page />);
     expect(
       screen.getByText((content) =>
-        content.includes("Најди го вистинскиот мајстор")
-      )
+        content.includes("Најди го вистинскиот мајстор"),
+      ),
     ).toBeInTheDocument();
   });
 
@@ -22,7 +22,7 @@ describe("Home Page", () => {
     render(<Page />);
     const postJobLinks = screen.getAllByText("Објави работа");
     const postJobAnchor = postJobLinks.find(
-      (el) => el.closest("a")?.getAttribute("href") === "/post-job"
+      (el) => el.closest("a")?.getAttribute("href") === "/post-job",
     );
     expect(postJobAnchor?.closest("a")).toHaveAttribute("href", "/post-job");
 

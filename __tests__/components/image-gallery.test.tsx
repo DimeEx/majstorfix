@@ -1,8 +1,10 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { ImageGallery } from "@/components/jobs/image-gallery";
 
-const fullUrl = "https://tmjooyvpjlinqafchcil.supabase.co/storage/v1/object/public/job-images/test.jpg";
-const thumbnailUrl = "https://tmjooyvpjlinqafchcil.supabase.co/storage/v1/render/image/public/job-images/test.jpg?width=400&height=300&quality=80";
+const fullUrl =
+  "https://tmjooyvpjlinqafchcil.supabase.co/storage/v1/object/public/job-images/test.jpg";
+const thumbnailUrl =
+  "https://tmjooyvpjlinqafchcil.supabase.co/storage/v1/render/image/public/job-images/test.jpg?width=400&height=300&quality=80";
 
 const images = [
   fullUrl,
@@ -10,10 +12,12 @@ const images = [
 ];
 
 vi.mock("@/lib/supabase/storage", () => ({
-  getThumbnailUrl: (url: string) => url.includes("test.jpg")
-    ? thumbnailUrl
-    : `${url.replace("/object/public/", "/render/image/public/")}?width=400&height=300&quality=80`,
-  getLightboxUrl: (url: string) => `${url.replace("/object/public/", "/render/image/public/")}?width=1200&quality=85`,
+  getThumbnailUrl: (url: string) =>
+    url.includes("test.jpg")
+      ? thumbnailUrl
+      : `${url.replace("/object/public/", "/render/image/public/")}?width=400&height=300&quality=80`,
+  getLightboxUrl: (url: string) =>
+    `${url.replace("/object/public/", "/render/image/public/")}?width=1200&quality=85`,
 }));
 
 describe("ImageGallery", () => {
@@ -23,12 +27,16 @@ describe("ImageGallery", () => {
   });
 
   it("renders nothing when images is null", () => {
-    const { container } = render(<ImageGallery images={null as unknown as string[]} />);
+    const { container } = render(
+      <ImageGallery images={null as unknown as string[]} />,
+    );
     expect(container).toBeEmptyDOMElement();
   });
 
   it("renders nothing when images is undefined", () => {
-    const { container } = render(<ImageGallery images={undefined as unknown as string[]} />);
+    const { container } = render(
+      <ImageGallery images={undefined as unknown as string[]} />,
+    );
     expect(container).toBeEmptyDOMElement();
   });
 

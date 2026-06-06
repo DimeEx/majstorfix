@@ -4,9 +4,27 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, X, Image as ImageIcon, MapPin, Home, FileText, Building2, ArrowUpDown, ArrowLeftRight, User, Package, Timer, Clock, CalendarDays, Wallet, Wrench } from "lucide-react";
+import {
+  Loader2,
+  X,
+  Image as ImageIcon,
+  MapPin,
+  Home,
+  FileText,
+  Building2,
+  ArrowUpDown,
+  ArrowLeftRight,
+  User,
+  Package,
+  Timer,
+  Clock,
+  CalendarDays,
+  Wallet,
+  Wrench,
+} from "lucide-react";
 import { toast } from "sonner";
 import { fullJobSchema, type FullJobInput } from "@/lib/validations/job-schema";
+import { MACEDONIAN_CITIES } from "@/lib/constants";
 import { uploadJobImages } from "@/lib/supabase/storage";
 import { updateJob } from "@/lib/actions/update-job";
 import { Button } from "@/components/ui/button";
@@ -14,8 +32,20 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-import { Field, FieldLabel, FieldContent, FieldError, FieldGroup } from "@/components/ui/field";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
+import {
+  Field,
+  FieldLabel,
+  FieldContent,
+  FieldError,
+  FieldGroup,
+} from "@/components/ui/field";
 import { Label } from "@/components/ui/label";
 import type { Job } from "@/lib/supabase/types";
 
@@ -26,7 +56,9 @@ interface EditJobFormProps {
 export function EditJobForm({ job }: EditJobFormProps) {
   const router = useRouter();
   const [newFiles, setNewFiles] = useState<File[]>([]);
-  const [existingImages, setExistingImages] = useState<string[]>(job.image_urls);
+  const [existingImages, setExistingImages] = useState<string[]>(
+    job.image_urls,
+  );
   const [submitting, setSubmitting] = useState(false);
 
   const {
@@ -57,7 +89,7 @@ export function EditJobForm({ job }: EditJobFormProps) {
       budget_min: job.budget_min,
       budget_max: job.budget_max,
     },
-    mode: "onBlur",
+    mode: "onChange",
   });
 
   const propertyType = watch("property_type");
@@ -77,11 +109,14 @@ export function EditJobForm({ job }: EditJobFormProps) {
     { value: "construction", label: "Градежништво" },
     { value: "other", label: "Друго" },
   ];
-  const selectedTradeLabel = tradeOptions.find((t) => t.value === selectedTradeType)?.label ?? null;
+  const selectedTradeLabel =
+    tradeOptions.find((t) => t.value === selectedTradeType)?.label ?? null;
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = Array.from(e.target.files ?? []);
-    setNewFiles((prev) => [...prev, ...selected].slice(0, Math.max(0, 5 - existingImages.length)));
+    setNewFiles((prev) =>
+      [...prev, ...selected].slice(0, Math.max(0, 5 - existingImages.length)),
+    );
     e.target.value = "";
   };
 
@@ -123,54 +158,83 @@ export function EditJobForm({ job }: EditJobFormProps) {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
       <Field>
         <FieldLabel className="flex items-center gap-2 text-sm">
-          <Wrench className="h-4 w-4 text-primary" />
+          <Wrench className="text-primary h-4 w-4" />
           Категорија
         </FieldLabel>
         <FieldContent>
           <Select
             defaultValue={job.trade_type}
-            onValueChange={(val) => setValue("trade_type", val as FullJobInput["trade_type"])}
+            onValueChange={(val) =>
+              setValue("trade_type", val as FullJobInput["trade_type"])
+            }
           >
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="Изберете категорија">{selectedTradeLabel}</SelectValue>
+              <SelectValue placeholder="Изберете категорија">
+                {selectedTradeLabel}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               {tradeOptions.map((opt) => (
-                <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                <SelectItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
-          <FieldError errors={errors.trade_type ? [errors.trade_type] : undefined} />
+          <FieldError
+            errors={errors.trade_type ? [errors.trade_type] : undefined}
+          />
         </FieldContent>
       </Field>
 
       <div className="grid gap-6 sm:grid-cols-2">
         <Field>
           <FieldLabel className="flex items-center gap-2 text-sm">
-            <MapPin className="h-4 w-4 text-primary" />
+            <MapPin className="text-primary h-4 w-4" />
             Град
           </FieldLabel>
           <FieldContent>
-            <Input placeholder="Пр. Скопје, Битола, Охрид" {...register("city")} />
+            <Select
+              defaultValue={job.city}
+              onValueChange={(val) =>
+                setValue("city", val as string, { shouldValidate: true })
+              }
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Изберете град" />
+              </SelectTrigger>
+              <SelectContent side="bottom" className="max-h-[380px]">
+                {MACEDONIAN_CITIES.map((city) => (
+                  <SelectItem key={city} value={city}>
+                    {city}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <FieldError errors={errors.city ? [errors.city] : undefined} />
           </FieldContent>
         </Field>
 
         <Field>
           <FieldLabel className="flex items-center gap-2 text-sm">
-            <Home className="h-4 w-4 text-primary" />
+            <Home className="text-primary h-4 w-4" />
             Населба / Општина
           </FieldLabel>
           <FieldContent>
-            <Input placeholder="Пр. Аеродром, Центар, Тафталиџе" {...register("neighborhood")} />
-            <FieldError errors={errors.neighborhood ? [errors.neighborhood] : undefined} />
+            <Input
+              placeholder="Пр. Аеродром, Центар, Тафталиџе"
+              {...register("neighborhood")}
+            />
+            <FieldError
+              errors={errors.neighborhood ? [errors.neighborhood] : undefined}
+            />
           </FieldContent>
         </Field>
       </div>
 
       <Field>
         <FieldLabel className="flex items-center gap-2 text-sm">
-          <FileText className="h-4 w-4 text-primary" />
+          <FileText className="text-primary h-4 w-4" />
           Опис на проблемот
         </FieldLabel>
         <FieldContent>
@@ -179,47 +243,57 @@ export function EditJobForm({ job }: EditJobFormProps) {
             rows={5}
             {...register("description")}
           />
-          <FieldError errors={errors.description ? [errors.description] : undefined} />
+          <FieldError
+            errors={errors.description ? [errors.description] : undefined}
+          />
         </FieldContent>
       </Field>
 
       <Field>
         <FieldLabel className="flex items-center gap-2 text-sm">
-          <ImageIcon className="h-4 w-4 text-primary" />
+          <ImageIcon className="text-primary h-4 w-4" />
           Слики од проблемот
         </FieldLabel>
         <FieldContent>
-          <div className="flex flex-wrap gap-2 mb-2">
+          <div className="mb-2 flex flex-wrap gap-2">
             {existingImages.map((url, i) => (
-              <div key={`existing-${i}`} className="relative group">
-                <div className="flex h-16 w-16 items-center justify-center rounded-lg border border-border bg-muted/50 text-xs text-muted-foreground overflow-hidden">
-                  <img src={url} alt="" className="h-full w-full object-cover" />
+              <div key={`existing-${i}`} className="group relative">
+                <div className="border-border bg-muted/50 text-muted-foreground flex h-16 w-16 items-center justify-center overflow-hidden rounded-lg border text-xs">
+                  <img
+                    src={url}
+                    alt=""
+                    className="h-full w-full object-cover"
+                  />
                 </div>
                 <button
                   type="button"
                   onClick={() => removeExistingImage(i)}
-                  className="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-destructive-foreground shadow-sm"
+                  className="bg-destructive text-destructive-foreground absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full shadow-sm"
                 >
                   <X className="h-3 w-3" />
                 </button>
               </div>
             ))}
             {newFiles.map((file, i) => (
-              <div key={`new-${i}`} className="relative group">
-                <div className="flex h-16 w-16 items-center justify-center rounded-lg border border-border bg-muted/50 text-xs text-muted-foreground overflow-hidden">
-                  <img src={URL.createObjectURL(file)} alt={file.name} className="h-full w-full object-cover" />
+              <div key={`new-${i}`} className="group relative">
+                <div className="border-border bg-muted/50 text-muted-foreground flex h-16 w-16 items-center justify-center overflow-hidden rounded-lg border text-xs">
+                  <img
+                    src={URL.createObjectURL(file)}
+                    alt={file.name}
+                    className="h-full w-full object-cover"
+                  />
                 </div>
                 <button
                   type="button"
                   onClick={() => removeNewFile(i)}
-                  className="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-destructive-foreground shadow-sm"
+                  className="bg-destructive text-destructive-foreground absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full shadow-sm"
                 >
                   <X className="h-3 w-3" />
                 </button>
               </div>
             ))}
             {existingImages.length + newFiles.length < 5 && (
-              <label className="flex h-16 w-16 cursor-pointer items-center justify-center rounded-lg border border-dashed border-border bg-muted/30 text-muted-foreground hover:bg-muted/50 transition-colors">
+              <label className="border-border bg-muted/30 text-muted-foreground hover:bg-muted/50 flex h-16 w-16 cursor-pointer items-center justify-center rounded-lg border border-dashed transition-colors">
                 <ImageIcon className="h-5 w-5" />
                 <input
                   type="file"
@@ -231,7 +305,7 @@ export function EditJobForm({ job }: EditJobFormProps) {
               </label>
             )}
           </div>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-muted-foreground text-xs">
             Додајте до 5 слики. Кликнете на X за да отстраните постоечка слика.
           </p>
         </FieldContent>
@@ -239,65 +313,90 @@ export function EditJobForm({ job }: EditJobFormProps) {
 
       <Field>
         <FieldLabel className="flex items-center gap-2 text-sm">
-          <Building2 className="h-4 w-4 text-primary" />
+          <Building2 className="text-primary h-4 w-4" />
           Тип на имот
         </FieldLabel>
         <FieldContent>
           <RadioGroup
             defaultValue={job.property_type}
-            onValueChange={(val) => setValue("property_type", val as "house" | "apartment")}
+            onValueChange={(val) =>
+              setValue("property_type", val as "house" | "apartment")
+            }
             className="flex gap-3"
           >
             <div className="flex-1">
-              <RadioGroupItem value="house" id="edit-house" className="peer sr-only" />
+              <RadioGroupItem
+                value="house"
+                id="edit-house"
+                className="peer sr-only"
+              />
               <Label
                 htmlFor="edit-house"
-                className="flex flex-col items-center gap-2 rounded-xl border-2 border-border/50 p-4 cursor-pointer transition-all peer-data-checked:border-primary peer-data-checked:bg-primary/5 hover:border-primary/50"
+                className="border-border/50 peer-data-checked:border-primary peer-data-checked:bg-primary/5 hover:border-primary/50 flex cursor-pointer flex-col items-center gap-2 rounded-xl border-2 p-4 transition-all"
               >
-                <Home className="h-6 w-6 text-primary" />
+                <Home className="text-primary h-6 w-6" />
                 <span className="text-sm font-medium">Куќа</span>
               </Label>
             </div>
             <div className="flex-1">
-              <RadioGroupItem value="apartment" id="edit-apartment" className="peer sr-only" />
+              <RadioGroupItem
+                value="apartment"
+                id="edit-apartment"
+                className="peer sr-only"
+              />
               <Label
                 htmlFor="edit-apartment"
-                className="flex flex-col items-center gap-2 rounded-xl border-2 border-border/50 p-4 cursor-pointer transition-all peer-data-checked:border-primary peer-data-checked:bg-primary/5 hover:border-primary/50"
+                className="border-border/50 peer-data-checked:border-primary peer-data-checked:bg-primary/5 hover:border-primary/50 flex cursor-pointer flex-col items-center gap-2 rounded-xl border-2 p-4 transition-all"
               >
-                <Building2 className="h-6 w-6 text-primary" />
+                <Building2 className="text-primary h-6 w-6" />
                 <span className="text-sm font-medium">Стан</span>
               </Label>
             </div>
           </RadioGroup>
-          <FieldError errors={errors.property_type ? [errors.property_type] : undefined} />
+          <FieldError
+            errors={errors.property_type ? [errors.property_type] : undefined}
+          />
         </FieldContent>
       </Field>
 
       {propertyType === "apartment" && (
-        <div className="rounded-xl bg-muted/50 p-4 space-y-4 animate-in slide-in-from-top-2 duration-300">
+        <div className="bg-muted/50 animate-in slide-in-from-top-2 space-y-4 rounded-xl p-4 duration-300">
           <FieldGroup>
             <Field>
               <FieldLabel className="flex items-center gap-2 text-sm">
-                <ArrowUpDown className="h-4 w-4 text-primary" />
+                <ArrowUpDown className="text-primary h-4 w-4" />
                 Кат
               </FieldLabel>
               <FieldContent>
-                <Input type="number" min={0} placeholder="Пр. 3" {...register("floor")} />
-                <FieldError errors={errors.floor ? [errors.floor] : undefined} />
+                <Input
+                  type="number"
+                  min={0}
+                  placeholder="Пр. 3"
+                  {...register("floor")}
+                />
+                <FieldError
+                  errors={errors.floor ? [errors.floor] : undefined}
+                />
               </FieldContent>
             </Field>
 
             <Field orientation="horizontal">
               <FieldLabel className="flex items-center gap-2 text-sm">
-                <ArrowLeftRight className="h-4 w-4 text-primary" />
+                <ArrowLeftRight className="text-primary h-4 w-4" />
                 Има лифт?
               </FieldLabel>
               <FieldContent>
                 <Switch
                   defaultChecked={job.has_elevator}
-                  onCheckedChange={(checked) => setValue("has_elevator", checked)}
+                  onCheckedChange={(checked) =>
+                    setValue("has_elevator", checked)
+                  }
                 />
-                <FieldError errors={errors.has_elevator ? [errors.has_elevator] : undefined} />
+                <FieldError
+                  errors={
+                    errors.has_elevator ? [errors.has_elevator] : undefined
+                  }
+                />
               </FieldContent>
             </Field>
           </FieldGroup>
@@ -306,7 +405,7 @@ export function EditJobForm({ job }: EditJobFormProps) {
 
       <Field>
         <FieldLabel className="flex items-center gap-2 text-sm">
-          <User className="h-4 w-4 text-primary" />
+          <User className="text-primary h-4 w-4" />
           Статус на имотот
         </FieldLabel>
         <FieldContent>
@@ -316,67 +415,101 @@ export function EditJobForm({ job }: EditJobFormProps) {
             className="flex gap-3"
           >
             <div className="flex-1">
-              <RadioGroupItem value="true" id="edit-occupied" className="peer sr-only" />
+              <RadioGroupItem
+                value="true"
+                id="edit-occupied"
+                className="peer sr-only"
+              />
               <Label
                 htmlFor="edit-occupied"
-                className="flex flex-col items-center gap-1.5 rounded-xl border-2 border-border/50 p-3.5 cursor-pointer transition-all peer-data-checked:border-primary peer-data-checked:bg-primary/5 hover:border-primary/50"
+                className="border-border/50 peer-data-checked:border-primary peer-data-checked:bg-primary/5 hover:border-primary/50 flex cursor-pointer flex-col items-center gap-1.5 rounded-xl border-2 p-3.5 transition-all"
               >
                 <span className="text-sm font-medium">Населен е</span>
-                <span className="text-xs text-muted-foreground">мајсторот работи со вас дома</span>
+                <span className="text-muted-foreground text-xs">
+                  мајсторот работи со вас дома
+                </span>
               </Label>
             </div>
             <div className="flex-1">
-              <RadioGroupItem value="false" id="edit-empty" className="peer sr-only" />
+              <RadioGroupItem
+                value="false"
+                id="edit-empty"
+                className="peer sr-only"
+              />
               <Label
                 htmlFor="edit-empty"
-                className="flex flex-col items-center gap-1.5 rounded-xl border-2 border-border/50 p-3.5 cursor-pointer transition-all peer-data-checked:border-primary peer-data-checked:bg-primary/5 hover:border-primary/50"
+                className="border-border/50 peer-data-checked:border-primary peer-data-checked:bg-primary/5 hover:border-primary/50 flex cursor-pointer flex-col items-center gap-1.5 rounded-xl border-2 p-3.5 transition-all"
               >
                 <span className="text-sm font-medium">Празен / изнајмен</span>
-                <span className="text-xs text-muted-foreground">нема потреба од надзор</span>
+                <span className="text-muted-foreground text-xs">
+                  нема потреба од надзор
+                </span>
               </Label>
             </div>
           </RadioGroup>
-          <FieldError errors={errors.is_occupied ? [errors.is_occupied] : undefined} />
+          <FieldError
+            errors={errors.is_occupied ? [errors.is_occupied] : undefined}
+          />
         </FieldContent>
       </Field>
 
       <Field>
         <FieldLabel className="flex items-center gap-2 text-sm">
-          <Package className="h-4 w-4 text-primary" />
+          <Package className="text-primary h-4 w-4" />
           Материјали
         </FieldLabel>
         <FieldContent>
           <RadioGroup
             defaultValue={job.material_status}
-            onValueChange={(val) => setValue("material_status", val as "buyer_provides" | "handyman_provides" | "negotiable")}
+            onValueChange={(val) =>
+              setValue(
+                "material_status",
+                val as "buyer_provides" | "handyman_provides" | "negotiable",
+              )
+            }
             className="flex flex-col gap-2"
           >
-            <div className="flex items-center gap-3 rounded-lg border-2 border-border/50 px-4 py-3 transition-all has-data-checked:border-primary has-data-checked:bg-primary/5">
+            <div className="border-border/50 has-data-checked:border-primary has-data-checked:bg-primary/5 flex items-center gap-3 rounded-lg border-2 px-4 py-3 transition-all">
               <RadioGroupItem value="buyer_provides" id="edit-buyer" />
-              <Label htmlFor="edit-buyer" className="font-medium">Јас ќе ги обезбедам материјалите</Label>
+              <Label htmlFor="edit-buyer" className="font-medium">
+                Јас ќе ги обезбедам материјалите
+              </Label>
             </div>
-            <div className="flex items-center gap-3 rounded-lg border-2 border-border/50 px-4 py-3 transition-all has-data-checked:border-primary has-data-checked:bg-primary/5">
+            <div className="border-border/50 has-data-checked:border-primary has-data-checked:bg-primary/5 flex items-center gap-3 rounded-lg border-2 px-4 py-3 transition-all">
               <RadioGroupItem value="handyman_provides" id="edit-handyman" />
-              <Label htmlFor="edit-handyman" className="font-medium">Мајсторот да обезбеди материјали</Label>
+              <Label htmlFor="edit-handyman" className="font-medium">
+                Мајсторот да обезбеди материјали
+              </Label>
             </div>
-            <div className="flex items-center gap-3 rounded-lg border-2 border-border/50 px-4 py-3 transition-all has-data-checked:border-primary has-data-checked:bg-primary/5">
+            <div className="border-border/50 has-data-checked:border-primary has-data-checked:bg-primary/5 flex items-center gap-3 rounded-lg border-2 px-4 py-3 transition-all">
               <RadioGroupItem value="negotiable" id="edit-negotiable" />
-              <Label htmlFor="edit-negotiable" className="font-medium">Се договара</Label>
+              <Label htmlFor="edit-negotiable" className="font-medium">
+                Се договара
+              </Label>
             </div>
           </RadioGroup>
-          <FieldError errors={errors.material_status ? [errors.material_status] : undefined} />
+          <FieldError
+            errors={
+              errors.material_status ? [errors.material_status] : undefined
+            }
+          />
         </FieldContent>
       </Field>
 
       <Field>
         <FieldLabel className="flex items-center gap-2 text-sm">
-          <Timer className="h-4 w-4 text-primary" />
+          <Timer className="text-primary h-4 w-4" />
           Итност
         </FieldLabel>
         <FieldContent>
           <Select
             defaultValue={job.urgency}
-            onValueChange={(val) => setValue("urgency", val as "emergency" | "few_days" | "flexible" | "custom")}
+            onValueChange={(val) =>
+              setValue(
+                "urgency",
+                val as "emergency" | "few_days" | "flexible" | "custom",
+              )
+            }
           >
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Изберете итност" />
@@ -389,25 +522,41 @@ export function EditJobForm({ job }: EditJobFormProps) {
             </SelectContent>
           </Select>
           {urgency === "custom" && (
-            <div className="mt-3 animate-in slide-in-from-top-2 duration-200">
-              <Input placeholder="Пр. Во рок од 1 недела, до 15ти, итн..." {...register("urgency_custom")} />
+            <div className="animate-in slide-in-from-top-2 mt-3 duration-200">
+              <Input
+                placeholder="Пр. Во рок од 1 недела, до 15ти, итн..."
+                {...register("urgency_custom")}
+              />
             </div>
           )}
           <FieldError errors={errors.urgency ? [errors.urgency] : undefined} />
-          <FieldError errors={errors.urgency_custom ? [errors.urgency_custom] : undefined} />
+          <FieldError
+            errors={errors.urgency_custom ? [errors.urgency_custom] : undefined}
+          />
         </FieldContent>
       </Field>
 
       <Field>
         <FieldLabel className="flex items-center gap-2 text-sm">
-          <Clock className="h-4 w-4 text-primary" />
+          <Clock className="text-primary h-4 w-4" />
           Време за изработка
         </FieldLabel>
         <FieldContent>
           <RadioGroup
             defaultValue={job.completion_time}
-            onValueChange={(val) => setValue("completion_time", val as "1-2_hours" | "3-4_hours" | "5-8_hours" | "1-2_days" | "3+_days" | "custom")}
-            className="grid grid-cols-2 sm:grid-cols-3 gap-2"
+            onValueChange={(val) =>
+              setValue(
+                "completion_time",
+                val as
+                  | "1-2_hours"
+                  | "3-4_hours"
+                  | "5-8_hours"
+                  | "1-2_days"
+                  | "3+_days"
+                  | "custom",
+              )
+            }
+            className="grid grid-cols-2 gap-2 sm:grid-cols-3"
           >
             {[
               { value: "1-2_hours", label: "1-2 часа" },
@@ -418,10 +567,14 @@ export function EditJobForm({ job }: EditJobFormProps) {
               { value: "custom", label: "Прилагодено" },
             ].map((opt) => (
               <div key={opt.value}>
-                <RadioGroupItem value={opt.value} id={`edit-${opt.value}`} className="peer sr-only" />
+                <RadioGroupItem
+                  value={opt.value}
+                  id={`edit-${opt.value}`}
+                  className="peer sr-only"
+                />
                 <Label
                   htmlFor={`edit-${opt.value}`}
-                  className="flex items-center justify-center rounded-lg border-2 border-border/50 px-3 py-2.5 text-sm font-medium cursor-pointer transition-all peer-data-checked:border-primary peer-data-checked:bg-primary/5 peer-data-checked:text-primary hover:border-primary/50"
+                  className="border-border/50 peer-data-checked:border-primary peer-data-checked:bg-primary/5 peer-data-checked:text-primary hover:border-primary/50 flex cursor-pointer items-center justify-center rounded-lg border-2 px-3 py-2.5 text-sm font-medium transition-all"
                 >
                   {opt.label}
                 </Label>
@@ -429,18 +582,31 @@ export function EditJobForm({ job }: EditJobFormProps) {
             ))}
           </RadioGroup>
           {completionTime === "custom" && (
-            <div className="mt-3 animate-in slide-in-from-top-2 duration-200">
-              <Input placeholder="Пр. 2-3 дена, 2 часа, итн..." {...register("completion_time_custom")} />
+            <div className="animate-in slide-in-from-top-2 mt-3 duration-200">
+              <Input
+                placeholder="Пр. 2-3 дена, 2 часа, итн..."
+                {...register("completion_time_custom")}
+              />
             </div>
           )}
-          <FieldError errors={errors.completion_time ? [errors.completion_time] : undefined} />
-          <FieldError errors={errors.completion_time_custom ? [errors.completion_time_custom] : undefined} />
+          <FieldError
+            errors={
+              errors.completion_time ? [errors.completion_time] : undefined
+            }
+          />
+          <FieldError
+            errors={
+              errors.completion_time_custom
+                ? [errors.completion_time_custom]
+                : undefined
+            }
+          />
         </FieldContent>
       </Field>
 
       <Field>
         <FieldLabel className="flex items-center gap-2 text-sm">
-          <CalendarDays className="h-4 w-4 text-primary" />
+          <CalendarDays className="text-primary h-4 w-4" />
           Времетраење на огласот
         </FieldLabel>
         <FieldContent>
@@ -457,29 +623,45 @@ export function EditJobForm({ job }: EditJobFormProps) {
               <SelectItem value="7">7 дена</SelectItem>
             </SelectContent>
           </Select>
-          <FieldError errors={errors.active_days ? [errors.active_days] : undefined} />
+          <FieldError
+            errors={errors.active_days ? [errors.active_days] : undefined}
+          />
         </FieldContent>
       </Field>
 
       <FieldGroup>
-        <FieldLabel className="flex items-center gap-2 text-sm mb-1">
-          <Wallet className="h-4 w-4 text-primary" />
+        <FieldLabel className="mb-1 flex items-center gap-2 text-sm">
+          <Wallet className="text-primary h-4 w-4" />
           Буџет
         </FieldLabel>
-        <div className="flex gap-2 items-start">
+        <div className="flex items-start gap-2">
           <div className="flex-1">
             <Field>
               <FieldContent>
-                <Input type="number" min={1} placeholder="Од" {...register("budget_min")} />
-                <FieldError errors={errors.budget_min ? [errors.budget_min] : undefined} />
+                <Input
+                  type="number"
+                  min={1}
+                  placeholder="Од"
+                  {...register("budget_min")}
+                />
+                <FieldError
+                  errors={errors.budget_min ? [errors.budget_min] : undefined}
+                />
               </FieldContent>
             </Field>
           </div>
           <div className="flex-1">
             <Field>
               <FieldContent>
-                <Input type="number" min={1} placeholder="До" {...register("budget_max")} />
-                <FieldError errors={errors.budget_max ? [errors.budget_max] : undefined} />
+                <Input
+                  type="number"
+                  min={1}
+                  placeholder="До"
+                  {...register("budget_max")}
+                />
+                <FieldError
+                  errors={errors.budget_max ? [errors.budget_max] : undefined}
+                />
               </FieldContent>
             </Field>
           </div>
@@ -488,7 +670,9 @@ export function EditJobForm({ job }: EditJobFormProps) {
               <FieldContent>
                 <Select
                   defaultValue={job.currency}
-                  onValueChange={(val) => setValue("currency", val as "MKD" | "EUR")}
+                  onValueChange={(val) =>
+                    setValue("currency", val as "MKD" | "EUR")
+                  }
                 >
                   <SelectTrigger className="w-full">
                     <SelectValue />
@@ -498,7 +682,9 @@ export function EditJobForm({ job }: EditJobFormProps) {
                     <SelectItem value="EUR">EUR</SelectItem>
                   </SelectContent>
                 </Select>
-                <FieldError errors={errors.currency ? [errors.currency] : undefined} />
+                <FieldError
+                  errors={errors.currency ? [errors.currency] : undefined}
+                />
               </FieldContent>
             </Field>
           </div>
@@ -506,10 +692,19 @@ export function EditJobForm({ job }: EditJobFormProps) {
       </FieldGroup>
 
       <div className="flex gap-4 pt-4">
-        <Button type="button" variant="outline" onClick={() => router.back()} className="flex-1 h-11 text-base">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => router.back()}
+          className="h-11 flex-1 text-base"
+        >
           Откажи
         </Button>
-        <Button type="submit" disabled={submitting} className="flex-1 h-11 text-base font-medium">
+        <Button
+          type="submit"
+          disabled={submitting}
+          className="h-11 flex-1 text-base font-medium"
+        >
           {submitting ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />

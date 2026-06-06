@@ -33,13 +33,18 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${fontSerif.variable} ${fontSans.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-background text-foreground">
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          <div className="bg-warm-glow fixed inset-0 pointer-events-none" />
-          <div className="bg-geo-pattern fixed inset-0 pointer-events-none" />
-          <div className="bg-noise fixed inset-0 pointer-events-none" />
+      <body className="bg-background text-foreground flex min-h-full flex-col">
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <div className="bg-warm-glow pointer-events-none fixed inset-0" />
+          <div className="bg-geo-pattern pointer-events-none fixed inset-0" />
+          <div className="bg-noise pointer-events-none fixed inset-0" />
           <Navbar />
-          <main className="flex-1 relative">{children}</main>
+          <main className="relative flex-1">{children}</main>
           <Toaster />
         </ThemeProvider>
       </body>

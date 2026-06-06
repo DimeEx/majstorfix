@@ -23,9 +23,11 @@ export function Navbar() {
       setLoading(false);
     });
 
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setUser(session?.user ?? null);
+      },
+    );
 
     return () => listener?.subscription.unsubscribe();
   }, []);
@@ -37,13 +39,15 @@ export function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-sidebar-border/50 bg-sidebar/80 backdrop-blur-xl supports-[backdrop-filter]:bg-sidebar/60">
+    <header className="border-sidebar-border/50 bg-sidebar/80 supports-[backdrop-filter]:bg-sidebar/60 sticky top-0 z-50 w-full border-b backdrop-blur-xl">
       <div className="container mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
         <Link href="/" className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary shadow-sm">
-            <Wrench className="h-4 w-4 text-primary-foreground" />
+          <div className="bg-primary flex h-8 w-8 items-center justify-center rounded-lg shadow-sm">
+            <Wrench className="text-primary-foreground h-4 w-4" />
           </div>
-          <span className="font-heading text-lg tracking-tight">MajstorFix</span>
+          <span className="font-heading text-lg tracking-tight">
+            MajstorFix
+          </span>
         </Link>
         <nav className="flex items-center gap-3">
           <Link
@@ -68,7 +72,7 @@ export function Navbar() {
           </Link>
           {loading ? (
             <div className="flex h-8 w-8 items-center justify-center">
-              <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+              <Loader2 className="text-muted-foreground h-4 w-4 animate-spin" />
             </div>
           ) : user ? (
             <div className="flex items-center gap-1">
@@ -94,7 +98,7 @@ export function Navbar() {
               </Link>
               <button
                 onClick={handleSignOut}
-                className="inline-flex h-8 w-8 items-center justify-center rounded-lg shadow-sm transition-all active:translate-y-px bg-sidebar-foreground/10 text-sidebar-foreground hover:bg-sidebar-foreground/15"
+                className="bg-sidebar-foreground/10 text-sidebar-foreground hover:bg-sidebar-foreground/15 inline-flex h-8 w-8 items-center justify-center rounded-lg shadow-sm transition-all active:translate-y-px"
               >
                 <LogOut className="h-4 w-4" />
               </button>

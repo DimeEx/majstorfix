@@ -8,7 +8,7 @@ interface ContactButtonsProps {
 
 export function ContactButtons({ phone, jobId }: ContactButtonsProps) {
   const viberDeepLink = `viber://forward?text=${encodeURIComponent(
-    `Здраво, ја контактирам во врска со работата (ID: ${jobId}) од MajstorFix.`
+    `Здраво, ја контактирам во врска со работата (ID: ${jobId}) од MajstorFix.`,
   )}`;
 
   return (

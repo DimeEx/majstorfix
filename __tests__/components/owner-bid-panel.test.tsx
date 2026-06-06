@@ -41,10 +41,12 @@ describe("OwnerBidPanel", () => {
         bids={[]}
         existingRatings={[]}
         verifiedPhones={[]}
-      />
+      />,
     );
 
-    expect(screen.getByText("Сè уште нема понуди за оваа работа.")).toBeInTheDocument();
+    expect(
+      screen.getByText("Сè уште нема понуди за оваа работа."),
+    ).toBeInTheDocument();
   });
 
   it("renders bid count in title", () => {
@@ -54,7 +56,7 @@ describe("OwnerBidPanel", () => {
         bids={mockBids}
         existingRatings={[]}
         verifiedPhones={[]}
-      />
+      />,
     );
 
     expect(screen.getByText("Пристигнати понуди (2)")).toBeInTheDocument();
@@ -67,7 +69,7 @@ describe("OwnerBidPanel", () => {
         bids={mockBids}
         existingRatings={[]}
         verifiedPhones={["+38970123456"]}
-      />
+      />,
     );
 
     const badges = screen.getAllByText("Верификуван");
@@ -81,7 +83,7 @@ describe("OwnerBidPanel", () => {
         bids={mockBids}
         existingRatings={[]}
         verifiedPhones={[]}
-      />
+      />,
     );
 
     expect(screen.queryByText("Верификуван")).not.toBeInTheDocument();
@@ -94,7 +96,7 @@ describe("OwnerBidPanel", () => {
         bids={mockBids}
         existingRatings={[]}
         verifiedPhones={["+38970123456"]}
-      />
+      />,
     );
 
     const badges = screen.getAllByText("Верификуван");
@@ -108,7 +110,7 @@ describe("OwnerBidPanel", () => {
         bids={mockBids}
         existingRatings={[]}
         verifiedPhones={["+38970123456", "+38970765432"]}
-      />
+      />,
     );
 
     const badges = screen.getAllByText("Верификуван");

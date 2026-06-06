@@ -1,4 +1,5 @@
 # Project Plan: MajstorFix (МајсторФикс)
+
 ## Reverse-Auction Handyman Platform for North Macedonia
 
 This document outlines the product specifications, market adaptations, database architecture, and technical stack for building the web application MVP of **MajstorFix**—a localized platform where Macedonian homeowners post repair jobs and local handymen bid on them transparently.
@@ -7,7 +8,7 @@ This document outlines the product specifications, market adaptations, database 
 
 ## 1. Core Market Adaptation & Strategy
 
-In North Macedonia, handymen traditionally operate under the *"Ќе се договориме"* (We will make a deal) model, keeping their pricing and availability private. To achieve market fit, this web application flips the standard directory model into a **Reverse-Auction/Job Posting System**:
+In North Macedonia, handymen traditionally operate under the _"Ќе се договориме"_ (We will make a deal) model, keeping their pricing and availability private. To achieve market fit, this web application flips the standard directory model into a **Reverse-Auction/Job Posting System**:
 
 1. **Buyer/Homeowner Initiates:** Homeowners outline the exact conditions of the repair job, bypassing repetitive phone call explanations.
 2. **Handyman Bids Privately:** Handymen see detailed parameters (photos, flooring, material requirements) and provide quick, low-friction digital quotes.
@@ -20,65 +21,74 @@ In North Macedonia, handymen traditionally operate under the *"Ќе се дог�
 The app is architected for maximum performance on mobile web browsers, ease of implementation using AI coding tools (like Cursor, v0, or local Ollama configurations), and zero-friction scaling to native app stores later.
 
 ### Frontend Framework
-*   **Next.js 15+ (App Router):** Provides fast, SEO-friendly server rendering and optimized routing.
-*   **React 19:** State-driven UI for handling complex, multi-step multi-variable forms.
+
+- **Next.js 15+ (App Router):** Provides fast, SEO-friendly server rendering and optimized routing.
+- **React 19:** State-driven UI for handling complex, multi-step multi-variable forms.
 
 ### Styling & UI
-*   **Tailwind CSS:** For fast, mobile-first responsive utility styling.
-*   **Shadcn/ui:** Pre-built, accessible UI components (dialogs, toggles, forms) that AI code generators understand perfectly.
-*   **Lucide React:** Clean, lightweight iconography for visual traits (elevators, tools, housing types).
+
+- **Tailwind CSS:** For fast, mobile-first responsive utility styling.
+- **Shadcn/ui:** Pre-built, accessible UI components (dialogs, toggles, forms) that AI code generators understand perfectly.
+- **Lucide React:** Clean, lightweight iconography for visual traits (elevators, tools, housing types).
 
 ### Backend & Database (BaaS)
-*   **Supabase:** Combines backend-as-a-service utilities into one integration:
-    *   **PostgreSQL Database:** Strong relational integrity for handling jobs and interconnected bids.
-    *   **Supabase Storage:** S3-compatible bucket storage for handling mandatory user-uploaded photos.
-    *   **Supabase Auth:** Low-friction authentication for managing users/handymen via phone OTP or email.
+
+- **Supabase:** Combines backend-as-a-service utilities into one integration:
+  - **PostgreSQL Database:** Strong relational integrity for handling jobs and interconnected bids.
+  - **Supabase Storage:** S3-compatible bucket storage for handling mandatory user-uploaded photos.
+  - **Supabase Auth:** Low-friction authentication for managing users/handymen via phone OTP or email.
 
 ### Utility Libraries
-*   **Zod + React Hook Form:** For strict schema validation of mandatory form inputs before sending data to the server.
+
+- **Zod + React Hook Form:** For strict schema validation of mandatory form inputs before sending data to the server.
 
 ---
 
 ## 3. Product Feature Specifications
 
 ### A. The Multi-Step "Post a Job" Wizard (Homeowner)
+
 To ensure high completion rates on mobile browsers, the job posting form is split into a clean, 3-step wizard panel:
 
-*   **Step 1: General Info & Visuals**
-    *   *City Selection:* Dropdown listing major Macedonian hubs (Skopje, Bitola, Ohrid, Tetovo, etc.).
-    *   *Neighborhood / Municipality:* Text input for localized traffic considerations (e.g., Aerodrom, Taftalidze).
-    *   *Problem Description:* Detailed text area explaining the issue.
-    *   *Photos of the Problem:* **Mandatory field.** File upload zone accepting camera/gallery attachments.
-*   **Step 2: Property Traits (The Technical Context)**
-    *   *Property Type Toggle:* `House` or `Apartment`.
-    *   *Conditional Apartment Fields:* If `Apartment` is active, input fields for **Floor Number** and a **Has Elevator?** (`Yes/No`) toggle dynamically slide down.
-    *   *Occupancy Status Toggle:* `Property is occupied` or `Property is empty / rental`.
-*   **Step 3: Logistics & Budget**
-    *   *Material Supply Selection:* Radio buttons for:
-        *   `I will buy the materials`
-        *   `Handyman should supply the materials`
-        *   `To be negotiated`
-    *   *Urgency Dropdown:* `Emergency (Today)`, `Within 2-3 Days`, or `Flexible`.
-    *   *Listing Expiration:* `24 Hours`, `3 Days`, or `7 Days` (how long the ad remains open for bidding).
-    *   *Expected Budget:* Minimum and Maximum MKD input fields to filter realistic handymen.
+- **Step 1: General Info & Visuals**
+  - _City Selection:_ Dropdown listing major Macedonian hubs (Skopje, Bitola, Ohrid, Tetovo, etc.).
+  - _Neighborhood / Municipality:_ Text input for localized traffic considerations (e.g., Aerodrom, Taftalidze).
+  - _Problem Description:_ Detailed text area explaining the issue.
+  - _Photos of the Problem:_ **Mandatory field.** File upload zone accepting camera/gallery attachments.
+- **Step 2: Property Traits (The Technical Context)**
+  - _Property Type Toggle:_ `House` or `Apartment`.
+  - _Conditional Apartment Fields:_ If `Apartment` is active, input fields for **Floor Number** and a **Has Elevator?** (`Yes/No`) toggle dynamically slide down.
+  - _Occupancy Status Toggle:_ `Property is occupied` or `Property is empty / rental`.
+- **Step 3: Logistics & Budget**
+  - _Material Supply Selection:_ Radio buttons for:
+    - `I will buy the materials`
+    - `Handyman should supply the materials`
+    - `To be negotiated`
+  - _Urgency Dropdown:_ `Emergency (Today)`, `Within 2-3 Days`, or `Flexible`.
+  - _Listing Expiration:_ `24 Hours`, `3 Days`, or `7 Days` (how long the ad remains open for bidding).
+  - _Expected Budget:_ Minimum and Maximum MKD input fields to filter realistic handymen.
 
 ### B. The Active Jobs Dashboard (Handyman Feed)
-*   A clean, scrollable feed filterable by **City** and **Trade Type**.
-*   Each job card displays property traits cleanly using compact UI badges (e.g., `3rd Floor - No Elevator` | `Emergency`).
-*   Photos are displayed in a native slider/thumbnail grid.
+
+- A clean, scrollable feed filterable by **City** and **Trade Type**.
+- Each job card displays property traits cleanly using compact UI badges (e.g., `3rd Floor - No Elevator` | `Emergency`).
+- Photos are displayed in a native slider/thumbnail grid.
 
 ### C. The Dual-Pricing Bidding Module (Handyman Interaction)
+
 When a handyman opens an active job, they are presented with a direct response module tailored to material preferences:
-*   **Price Option A (Labor Only):** Input field for work cost alone.
-*   **Price Option B (Labor + Materials):** Input field for full-service coverage.
-*   **Earliest Availability:** Dedicated date/time picker.
-*   **Contact Information:** Phone number registry for matching.
+
+- **Price Option A (Labor Only):** Input field for work cost alone.
+- **Price Option B (Labor + Materials):** Input field for full-service coverage.
+- **Earliest Availability:** Dedicated date/time picker.
+- **Contact Information:** Phone number registry for matching.
 
 ### D. The Real-Time Lead Tracker (Homeowner Dashboard)
-*   Homeowners see their job post alongside a incoming feed of quotes.
-*   The system hides precise contact details from the public web feed. Once the homeowner views the incoming quotes, they can tap directly to reveal the connection:
-    *   **Call Button:** Initiates native mobile dialer (`tel:389...`).
-    *   **Viber Shortcut:** Launches Viber using deep linking with a pre-formatted template text detailing the job ID.
+
+- Homeowners see their job post alongside a incoming feed of quotes.
+- The system hides precise contact details from the public web feed. Once the homeowner views the incoming quotes, they can tap directly to reveal the connection:
+  - **Call Button:** Initiates native mobile dialer (`tel:389...`).
+  - **Viber Shortcut:** Launches Viber using deep linking with a pre-formatted template text detailing the job ID.
 
 ---
 
@@ -202,53 +212,55 @@ When writing or modifying code for this project, you must strictly follow these 
 
 ### Project Structure (Actual)
 ```
+
 majstorfix/
-├── app/                          # Next.js App Router
-│   ├── layout.tsx                # Root layout (Navbar, Geist fonts, Toaster)
-│   ├── page.tsx                  # Landing page (dual CTA)
-│   ├── post-job/page.tsx         # Multi-step wizard page
-│   ├── jobs/
-│   │   ├── page.tsx              # Filterable job feed (dynamic, searchParams)
-│   │   └── [id]/page.tsx         # Job detail + bid form (dynamic, params)
-│   └── dashboard/page.tsx        # Homeowner lead tracker
+├── app/ # Next.js App Router
+│ ├── layout.tsx # Root layout (Navbar, Geist fonts, Toaster)
+│ ├── page.tsx # Landing page (dual CTA)
+│ ├── post-job/page.tsx # Multi-step wizard page
+│ ├── jobs/
+│ │ ├── page.tsx # Filterable job feed (dynamic, searchParams)
+│ │ └── [id]/page.tsx # Job detail + bid form (dynamic, params)
+│ └── dashboard/page.tsx # Homeowner lead tracker
 ├── components/
-│   ├── ui/                       # shadcn/ui primitives (14 components)
-│   ├── shared/navbar.tsx         # Sticky navigation
-│   ├── post-job/
-│   │   ├── wizard-provider.tsx   # 3-step wizard state container
-│   │   ├── step-general-info.tsx # City, neighborhood, description, photos
-│   │   ├── step-property-traits.tsx # House/Apartment, floor, elevator, occupancy
-│   │   └── step-logistics.tsx    # Materials, urgency, expiry, budget range
-│   ├── jobs/
-│   │   ├── job-card.tsx          # Job listing card
-│   │   ├── job-filters.tsx       # City filter (URL search params)
-│   │   └── job-badges.tsx        # Property + urgency badges
-│   ├── bid/
-│   │   └── bid-form.tsx          # Dual pricing, phone, date, notes
-│   └── dashboard/
-│       ├── lead-tracker.tsx      # Dashboard landing (empty state)
-│       └── contact-buttons.tsx   # tel: + viber:// deep links
+│ ├── ui/ # shadcn/ui primitives (14 components)
+│ ├── shared/navbar.tsx # Sticky navigation
+│ ├── post-job/
+│ │ ├── wizard-provider.tsx # 3-step wizard state container
+│ │ ├── step-general-info.tsx # City, neighborhood, description, photos
+│ │ ├── step-property-traits.tsx # House/Apartment, floor, elevator, occupancy
+│ │ └── step-logistics.tsx # Materials, urgency, expiry, budget range
+│ ├── jobs/
+│ │ ├── job-card.tsx # Job listing card
+│ │ ├── job-filters.tsx # City filter (URL search params)
+│ │ └── job-badges.tsx # Property + urgency badges
+│ ├── bid/
+│ │ └── bid-form.tsx # Dual pricing, phone, date, notes
+│ └── dashboard/
+│ ├── lead-tracker.tsx # Dashboard landing (empty state)
+│ └── contact-buttons.tsx # tel: + viber:// deep links
 ├── lib/
-│   ├── utils.ts                  # cn() helper
-│   ├── supabase/
-│   │   ├── client.ts             # Browser Supabase client (use client)
-│   │   ├── server.ts             # Server Supabase client (async cookies)
-│   │   └── types.ts              # Database types (Job, Bid, Database)
-│   └── validations/
-│       ├── job-schema.ts         # Zod schemas for all 3 wizard steps + full
-│       └── bid-schema.ts         # Zod schema for bid form
+│ ├── utils.ts # cn() helper
+│ ├── supabase/
+│ │ ├── client.ts # Browser Supabase client (use client)
+│ │ ├── server.ts # Server Supabase client (async cookies)
+│ │ └── types.ts # Database types (Job, Bid, Database)
+│ └── validations/
+│ ├── job-schema.ts # Zod schemas for all 3 wizard steps + full
+│ └── bid-schema.ts # Zod schema for bid form
 ├── supabase/migrations/
-│   └── 00001_initial_schema.sql  # Full migration (enums, tables, indexes, RLS)
-├── __tests__/                    # 61 tests across 13 files
-│   ├── ui/                       # Button + Input unit tests
-│   ├── supabase/                 # Types, client imports, migration content
-│   ├── validations/              # Zod schema validation tests
-│   ├── pages/                    # Page rendering + navbar tests
-│   └── components/               # JobBadges + ContactButtons tests
+│ └── 00001_initial_schema.sql # Full migration (enums, tables, indexes, RLS)
+├── **tests**/ # 61 tests across 13 files
+│ ├── ui/ # Button + Input unit tests
+│ ├── supabase/ # Types, client imports, migration content
+│ ├── validations/ # Zod schema validation tests
+│ ├── pages/ # Page rendering + navbar tests
+│ └── components/ # JobBadges + ContactButtons tests
 ├── vitest.config.ts
-├── components.json               # shadcn config
-├── .env                          # Supabase credentials (SUPABASE_URL, ANON_API_KEY, etc.)
+├── components.json # shadcn config
+├── .env # Supabase credentials (SUPABASE_URL, ANON_API_KEY, etc.)
 └── package.json
+
 ```
 
 ### Completed Work
@@ -291,3 +303,4 @@ All features from the initial plan are implemented. The core MVP flow works:
 3. Handymen view job details and submit bids
 4. Homeowners see incoming bids in real-time on their dashboard
 5. Contact via phone/Viber deep links
+```

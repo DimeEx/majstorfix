@@ -4,7 +4,9 @@ import { createClient } from "@/lib/supabase/server";
 
 const MAX_JOB_IDS = 100;
 
-export async function getBidCounts(jobIds: string[]): Promise<Record<string, number>> {
+export async function getBidCounts(
+  jobIds: string[],
+): Promise<Record<string, number>> {
   if (jobIds.length === 0) return {};
 
   const supabase = await createClient();
@@ -24,7 +26,7 @@ export async function getBidCounts(jobIds: string[]): Promise<Record<string, num
 
   if (!ownedJobs || ownedJobs.length === 0) return {};
 
-  const ownedIds = ownedJobs.map((j) => j.id);
+  const ownedIds = (ownedJobs as { id: string }[]).map((j) => j.id);
 
   const { data: bids } = await supabase
     .from("bids")
@@ -33,8 +35,11 @@ export async function getBidCounts(jobIds: string[]): Promise<Record<string, num
 
   if (!bids) return {};
 
-  return bids.reduce<Record<string, number>>((acc, bid) => {
-    acc[bid.job_id] = (acc[bid.job_id] ?? 0) + 1;
-    return acc;
-  }, {});
+  return (bids as { job_id: string }[]).reduce<Record<string, number>>(
+    (acc, bid) => {
+      acc[bid.job_id] = (acc[bid.job_id] ?? 0) + 1;
+      return acc;
+    },
+    {},
+  );
 }

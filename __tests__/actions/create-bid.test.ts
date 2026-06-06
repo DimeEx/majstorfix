@@ -42,7 +42,9 @@ describe("createBid", () => {
 
     const result = await createBid(validInput);
 
-    expect(result).toEqual({ error: "Мора да бидете најавени за да испратите понуда." });
+    expect(result).toEqual({
+      error: "Мора да бидете најавени за да испратите понуда.",
+    });
     expect(mockInsert).not.toHaveBeenCalled();
   });
 
@@ -54,7 +56,9 @@ describe("createBid", () => {
 
     const result = await createBid(validInput);
 
-    expect(result).toEqual({ error: "Мора да бидете најавени за да испратите понуда." });
+    expect(result).toEqual({
+      error: "Мора да бидете најавени за да испратите понуда.",
+    });
     expect(mockInsert).not.toHaveBeenCalled();
   });
 
@@ -121,7 +125,9 @@ describe("createBid", () => {
 
     const result = await createBid(validInput);
 
-    expect(result).toEqual({ error: "new row violates row-level security policy" });
+    expect(result).toEqual({
+      error: "new row violates row-level security policy",
+    });
   });
 
   it("returns success with optional fields set to null when not provided", async () => {

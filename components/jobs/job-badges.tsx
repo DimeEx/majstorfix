@@ -22,7 +22,13 @@ const tradeLabels: Record<TradeType, string> = {
   other: "Друго",
 };
 
-export function JobBadges({ propertyType, floor, hasElevator, urgency, tradeType }: JobBadgesProps) {
+export function JobBadges({
+  propertyType,
+  floor,
+  hasElevator,
+  urgency,
+  tradeType,
+}: JobBadgesProps) {
   const urgencyColor = {
     emergency: "destructive" as const,
     few_days: "secondary" as const,
@@ -32,16 +38,24 @@ export function JobBadges({ propertyType, floor, hasElevator, urgency, tradeType
   return (
     <div className="flex flex-wrap gap-1.5">
       {tradeType && (
-        <Badge variant="default" className="bg-primary/10 text-primary border-primary/20">
+        <Badge
+          variant="default"
+          className="bg-primary/10 text-primary border-primary/20"
+        >
           {tradeLabels[tradeType]}
         </Badge>
       )}
       <Badge variant="outline">
         {propertyType === "house" ? "Куќа" : "Стан"}
-        {floor !== null && ` - ${floor}. кат${!hasElevator ? " (без лифт)" : ""}`}
+        {floor !== null &&
+          ` - ${floor}. кат${!hasElevator ? " (без лифт)" : ""}`}
       </Badge>
       <Badge variant={urgencyColor[urgency as keyof typeof urgencyColor]}>
-        {urgency === "emergency" ? "Итно" : urgency === "few_days" ? "2-3 дена" : "Флексибилно"}
+        {urgency === "emergency"
+          ? "Итно"
+          : urgency === "few_days"
+            ? "2-3 дена"
+            : "Флексибилно"}
       </Badge>
     </div>
   );

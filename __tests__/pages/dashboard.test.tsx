@@ -4,7 +4,8 @@ import DashboardPage from "@/app/dashboard/page";
 vi.mock("@/lib/supabase/server", () => ({
   createClient: () => ({
     auth: {
-      getUser: () => Promise.resolve({ data: { user: { id: "test-user" } }, error: null }),
+      getUser: () =>
+        Promise.resolve({ data: { user: { id: "test-user" } }, error: null }),
     },
     from: () => ({
       select: () => ({

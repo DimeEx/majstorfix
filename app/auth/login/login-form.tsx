@@ -16,16 +16,21 @@ type SignInState = Awaited<ReturnType<typeof signIn>> | null;
 export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [state, action, pending] = useActionState<SignInState>(signIn, null);
+  const [state, action, pending] = useActionState<SignInState, FormData>(
+    signIn,
+    null,
+  );
 
   useEffect(() => {
     if (searchParams.get("registered") === "true") {
-      toast.success("Регистрацијата е успешна. Проверете го вашиот email за потврда.");
+      toast.success(
+        "Регистрацијата е успешна. Проверете го вашиот email за потврда.",
+      );
     }
   }, [searchParams]);
 
   useEffect(() => {
-    if (state?.success) {
+    if (state && "success" in state) {
       const initSession = async () => {
         const supabase = createClient();
         await supabase.auth.setSession({
@@ -35,7 +40,7 @@ export function LoginForm() {
         router.push("/");
       };
       initSession();
-    } else if (state?.error) {
+    } else if (state && "error" in state) {
       toast.error(state.error);
     }
   }, [state, router]);

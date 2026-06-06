@@ -80,9 +80,9 @@ export function PostJobWizard() {
     <div>
       {/* Step Progress */}
       <div className="relative mb-10">
-        <div className="absolute top-5 left-0 right-0 h-px bg-border" />
+        <div className="bg-border absolute top-5 right-0 left-0 h-px" />
         <div
-          className="absolute top-5 left-0 h-px bg-primary transition-all duration-500 ease-in-out"
+          className="bg-primary absolute top-5 left-0 h-px transition-all duration-500 ease-in-out"
           style={{ width: `${(currentIndex / (steps.length - 1)) * 100}%` }}
         />
         <div className="relative flex justify-between">
@@ -94,20 +94,16 @@ export function PostJobWizard() {
                 <div
                   className={`relative z-10 flex h-10 w-10 items-center justify-center rounded-full text-sm font-medium transition-all duration-300 ${
                     isCompleted
-                      ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
+                      ? "bg-primary text-primary-foreground shadow-primary/25 shadow-lg"
                       : isCurrent
-                        ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25 ring-4 ring-primary/15"
+                        ? "bg-primary text-primary-foreground shadow-primary/25 ring-primary/15 shadow-lg ring-4"
                         : "bg-muted text-muted-foreground"
                   }`}
                 >
-                  {isCompleted ? (
-                    <Check className="h-4 w-4" />
-                  ) : (
-                    step.number
-                  )}
+                  {isCompleted ? <Check className="h-4 w-4" /> : step.number}
                 </div>
                 <span
-                  className={`hidden sm:block text-xs font-medium transition-colors ${
+                  className={`hidden text-xs font-medium transition-colors sm:block ${
                     isCurrent
                       ? "text-foreground"
                       : isCompleted
@@ -124,11 +120,13 @@ export function PostJobWizard() {
       </div>
 
       {/* Step Content */}
-      <div className="bg-card rounded-2xl border border-border/50 shadow-sm shadow-border/50 p-6 sm:p-8">
+      <div className="bg-card border-border/50 shadow-border/50 rounded-2xl border p-6 shadow-sm sm:p-8">
         {isSubmitting && (
-          <div className="flex flex-col items-center justify-center py-16 gap-3">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="text-sm text-muted-foreground">Објавување на работата...</p>
+          <div className="flex flex-col items-center justify-center gap-3 py-16">
+            <Loader2 className="text-primary h-8 w-8 animate-spin" />
+            <p className="text-muted-foreground text-sm">
+              Објавување на работата...
+            </p>
           </div>
         )}
 
@@ -143,7 +141,9 @@ export function PostJobWizard() {
         )}
 
         {submitError && (
-          <p className="mt-4 text-sm text-destructive text-center">{submitError}</p>
+          <p className="text-destructive mt-4 text-center text-sm">
+            {submitError}
+          </p>
         )}
       </div>
     </div>

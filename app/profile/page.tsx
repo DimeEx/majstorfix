@@ -25,7 +25,7 @@ export default async function ProfilePage() {
     <div className="container mx-auto max-w-2xl px-4 py-8">
       <Link
         href="/"
-        className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6"
+        className="text-muted-foreground hover:text-foreground mb-6 inline-flex items-center gap-1 text-sm transition-colors"
       >
         <ArrowLeft className="h-4 w-4" />
         Назад
@@ -39,11 +39,11 @@ export default async function ProfilePage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center gap-3 text-sm">
-            <Mail className="h-4 w-4 text-muted-foreground shrink-0" />
+            <Mail className="text-muted-foreground h-4 w-4 shrink-0" />
             <span>{user.email}</span>
           </div>
           <div className="flex items-center gap-3 text-sm">
-            <Calendar className="h-4 w-4 text-muted-foreground shrink-0" />
+            <Calendar className="text-muted-foreground h-4 w-4 shrink-0" />
             <span>Регистриран на {createdDate}</span>
           </div>
         </CardContent>

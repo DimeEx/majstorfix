@@ -5,11 +5,11 @@ export default function HomePage() {
   return (
     <div className="container mx-auto max-w-5xl px-4">
       {/* Hero */}
-      <section className="relative flex flex-col items-center justify-center px-4 py-20 text-center sm:py-28 overflow-hidden">
+      <section className="relative flex flex-col items-center justify-center overflow-hidden px-4 py-20 text-center sm:py-28">
         {/* Decorative background illustration */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center select-none">
           <svg
-            className="w-full max-w-[800px] h-auto opacity-[0.04] dark:opacity-[0.06]"
+            className="h-auto w-full max-w-[800px] opacity-[0.04] dark:opacity-[0.06]"
             viewBox="0 0 800 600"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
@@ -47,26 +47,27 @@ export default function HomePage() {
             </g>
           </svg>
         </div>
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--primary)_0%,_transparent_60%)] opacity-[0.07] pointer-events-none" />
-        <h1 className="relative max-w-2xl font-heading text-4xl leading-tight tracking-tight sm:text-5xl lg:text-6xl">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--primary)_0%,_transparent_60%)] opacity-[0.07]" />
+        <h1 className="font-heading relative max-w-2xl text-4xl leading-tight tracking-tight sm:text-5xl lg:text-6xl">
           Најди го вистинскиот мајстор
           <br />
           <span className="text-primary">за твојата поправка</span>
         </h1>
-        <p className="relative mt-5 max-w-lg text-lg text-muted-foreground">
-          Објави ја твојата поправка, добиј понуди од локални мајстори и избери ја најдобрата.
+        <p className="text-muted-foreground relative mt-5 max-w-lg text-lg">
+          Објави ја твојата поправка, добиј понуди од локални мајстори и избери
+          ја најдобрата.
         </p>
         <div className="relative mt-8 flex flex-col gap-4 sm:flex-row">
           <Link
             href="/post-job"
-            className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-foreground px-8 text-base font-medium text-background shadow-lg shadow-foreground/10 transition-all hover:bg-foreground/90 hover:shadow-xl hover:-translate-y-0.5 active:translate-y-px"
+            className="bg-foreground text-background shadow-foreground/10 hover:bg-foreground/90 inline-flex h-12 items-center justify-center gap-2 rounded-xl px-8 text-base font-medium shadow-lg transition-all hover:-translate-y-0.5 hover:shadow-xl active:translate-y-px"
           >
             Објави работа
             <Wrench className="h-4 w-4" />
           </Link>
           <Link
             href="/jobs"
-            className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border-2 border-border/50 bg-card px-8 text-base font-medium shadow-sm transition-all hover:border-primary/50 hover:shadow-md hover:-translate-y-0.5 active:translate-y-px"
+            className="border-border/50 bg-card hover:border-primary/50 inline-flex h-12 items-center justify-center gap-2 rounded-xl border-2 px-8 text-base font-medium shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md active:translate-y-px"
           >
             <Search className="h-4 w-4" />
             Прегледај работи
@@ -76,7 +77,7 @@ export default function HomePage() {
 
       {/* How it works */}
       <section className="py-16 sm:py-20">
-        <h2 className="text-center font-heading text-2xl tracking-tight sm:text-3xl">
+        <h2 className="font-heading text-center text-2xl tracking-tight sm:text-3xl">
           Како функционира?
         </h2>
         <div className="mt-10 grid gap-6 sm:grid-cols-3">
@@ -99,29 +100,32 @@ export default function HomePage() {
           ].map((item, i) => (
             <div
               key={i}
-              className="group relative rounded-2xl border border-border/50 bg-card p-6 shadow-sm transition-all hover:shadow-md hover:-translate-y-0.5"
+              className="group border-border/50 bg-card relative rounded-2xl border p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
             >
-              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-all">
+              <div className="bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground mb-4 flex h-10 w-10 items-center justify-center rounded-xl transition-all">
                 {item.icon}
               </div>
               <h3 className="font-heading text-lg">{item.title}</h3>
-              <p className="mt-1.5 text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
+              <p className="text-muted-foreground mt-1.5 text-sm leading-relaxed">
+                {item.desc}
+              </p>
             </div>
           ))}
         </div>
       </section>
 
       {/* Trust section */}
-      <section className="py-16 sm:py-20 border-t border-border/50">
+      <section className="border-border/50 border-t py-16 sm:py-20">
         <div className="flex flex-col items-center text-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10">
-            <ShieldCheck className="h-6 w-6 text-primary" />
+          <div className="bg-primary/10 flex h-12 w-12 items-center justify-center rounded-2xl">
+            <ShieldCheck className="text-primary h-6 w-6" />
           </div>
-          <h2 className="mt-4 font-heading text-2xl tracking-tight sm:text-3xl">
+          <h2 className="font-heading mt-4 text-2xl tracking-tight sm:text-3xl">
             Сигурност и доверба
           </h2>
-          <p className="mt-3 max-w-md text-muted-foreground">
-            Сите мајстори поминуваат низ верификација. Имаш можност да оцениш и да оставиш коментар за завршената работа.
+          <p className="text-muted-foreground mt-3 max-w-md">
+            Сите мајстори поминуваат низ верификација. Имаш можност да оцениш и
+            да оставиш коментар за завршената работа.
           </p>
         </div>
       </section>

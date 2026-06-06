@@ -10,7 +10,10 @@ describe("StarRating", () => {
 
   it("renders correct aria-label in read-only mode", () => {
     render(<StarRating value={4} readOnly />);
-    expect(screen.getByRole("img")).toHaveAttribute("aria-label", "Оценка: 4 од 5");
+    expect(screen.getByRole("img")).toHaveAttribute(
+      "aria-label",
+      "Оценка: 4 од 5",
+    );
   });
 
   it("renders in interactive mode by default", () => {

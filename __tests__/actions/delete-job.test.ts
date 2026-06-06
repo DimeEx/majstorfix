@@ -27,7 +27,8 @@ vi.mock("@/lib/supabase/server", () => ({
 }));
 
 const validJobId = "123e4567-e89b-12d3-a456-426614174000";
-const imageUrl = "https://tmjooyvpjlinqafchcil.supabase.co/storage/v1/object/public/job-images/test-uuid/image.jpg";
+const imageUrl =
+  "https://tmjooyvpjlinqafchcil.supabase.co/storage/v1/object/public/job-images/test-uuid/image.jpg";
 
 describe("deleteJob", () => {
   beforeEach(() => {
@@ -39,15 +40,21 @@ describe("deleteJob", () => {
 
     const result = await deleteJob(validJobId);
 
-    expect(result).toEqual({ error: "Мора да бидете најавени за да избришете работа." });
+    expect(result).toEqual({
+      error: "Мора да бидете најавени за да избришете работа.",
+    });
     expect(mockDelete).not.toHaveBeenCalled();
   });
 
   it("returns error when job is not found", async () => {
-    mockGetUser.mockResolvedValue({ data: { user: { id: "user-1" } }, error: null });
+    mockGetUser.mockResolvedValue({
+      data: { user: { id: "user-1" } },
+      error: null,
+    });
     mockSelect.mockReturnValue({
       eq: () => ({
-        single: () => Promise.resolve({ data: null, error: { message: "Not found" } }),
+        single: () =>
+          Promise.resolve({ data: null, error: { message: "Not found" } }),
       }),
     });
 
@@ -58,10 +65,14 @@ describe("deleteJob", () => {
   });
 
   it("returns error when user is not the owner", async () => {
-    mockGetUser.mockResolvedValue({ data: { user: { id: "user-2" } }, error: null });
+    mockGetUser.mockResolvedValue({
+      data: { user: { id: "user-2" } },
+      error: null,
+    });
     mockSelect.mockReturnValue({
       eq: () => ({
-        single: () => Promise.resolve({ data: { owner_id: "user-1", image_urls: [] } }),
+        single: () =>
+          Promise.resolve({ data: { owner_id: "user-1", image_urls: [] } }),
       }),
     });
 
@@ -72,10 +83,16 @@ describe("deleteJob", () => {
   });
 
   it("deletes job and storage images successfully", async () => {
-    mockGetUser.mockResolvedValue({ data: { user: { id: "user-1" } }, error: null });
+    mockGetUser.mockResolvedValue({
+      data: { user: { id: "user-1" } },
+      error: null,
+    });
     mockSelect.mockReturnValue({
       eq: () => ({
-        single: () => Promise.resolve({ data: { owner_id: "user-1", image_urls: [imageUrl] } }),
+        single: () =>
+          Promise.resolve({
+            data: { owner_id: "user-1", image_urls: [imageUrl] },
+          }),
       }),
     });
     mockDelete.mockReturnValue({
@@ -91,10 +108,14 @@ describe("deleteJob", () => {
   });
 
   it("deletes job successfully even when there are no images", async () => {
-    mockGetUser.mockResolvedValue({ data: { user: { id: "user-1" } }, error: null });
+    mockGetUser.mockResolvedValue({
+      data: { user: { id: "user-1" } },
+      error: null,
+    });
     mockSelect.mockReturnValue({
       eq: () => ({
-        single: () => Promise.resolve({ data: { owner_id: "user-1", image_urls: [] } }),
+        single: () =>
+          Promise.resolve({ data: { owner_id: "user-1", image_urls: [] } }),
       }),
     });
     mockDelete.mockReturnValue({
@@ -108,10 +129,14 @@ describe("deleteJob", () => {
   });
 
   it("returns error when delete fails", async () => {
-    mockGetUser.mockResolvedValue({ data: { user: { id: "user-1" } }, error: null });
+    mockGetUser.mockResolvedValue({
+      data: { user: { id: "user-1" } },
+      error: null,
+    });
     mockSelect.mockReturnValue({
       eq: () => ({
-        single: () => Promise.resolve({ data: { owner_id: "user-1", image_urls: [] } }),
+        single: () =>
+          Promise.resolve({ data: { owner_id: "user-1", image_urls: [] } }),
       }),
     });
     mockDelete.mockReturnValue({

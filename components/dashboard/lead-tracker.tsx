@@ -29,9 +29,12 @@ export function LeadTracker({ jobs, initialBidCounts }: LeadTrackerProps) {
             <CardTitle className="text-base">Вашите објави</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-muted-foreground text-sm">
               Сè уште немате објавено работа.{" "}
-              <Link href="/post-job" className="underline underline-offset-4 hover:text-primary">
+              <Link
+                href="/post-job"
+                className="hover:text-primary underline underline-offset-4"
+              >
                 Објавете ја вашата прва работа
               </Link>
             </p>
@@ -50,25 +53,38 @@ export function LeadTracker({ jobs, initialBidCounts }: LeadTrackerProps) {
             <CardHeader>
               <div className="flex items-start justify-between gap-2">
                 <CardTitle className="text-base">
-                  <Link href={`/jobs/${job.id}`} className="hover:text-primary transition-colors">
-                    {job.city}{job.neighborhood ? `, ${job.neighborhood}` : ""}
+                  <Link
+                    href={`/jobs/${job.id}`}
+                    className="hover:text-primary transition-colors"
+                  >
+                    {job.city}
+                    {job.neighborhood ? `, ${job.neighborhood}` : ""}
                   </Link>
                 </CardTitle>
-                <div className="flex items-center gap-2 shrink-0">
+                <div className="flex shrink-0 items-center gap-2">
                   {count > 0 && (
-                    <Badge variant="default" className="bg-primary/10 text-primary border-primary/20">
+                    <Badge
+                      variant="default"
+                      className="bg-primary/10 text-primary border-primary/20"
+                    >
                       {count} понуда{count !== 1 ? "и" : ""}
                     </Badge>
                   )}
                   <Badge variant="secondary">
-                    {job.budget_min.toLocaleString()} - {job.budget_max.toLocaleString()} {job.currency}
+                    {job.budget_min.toLocaleString()} -{" "}
+                    {job.budget_max.toLocaleString()} {job.currency}
                   </Badge>
-                  <DeleteJobButton jobId={job.id} variant="outline" size="icon-sm" className="text-muted-foreground hover:text-destructive" />
+                  <DeleteJobButton
+                    jobId={job.id}
+                    variant="outline"
+                    size="icon-sm"
+                    className="text-muted-foreground hover:text-destructive"
+                  />
                 </div>
               </div>
             </CardHeader>
             <CardContent>
-              <p className="line-clamp-2 text-sm text-muted-foreground mb-3">
+              <p className="text-muted-foreground mb-3 line-clamp-2 text-sm">
                 {job.description}
               </p>
             </CardContent>

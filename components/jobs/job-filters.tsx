@@ -8,8 +8,9 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
+import { MACEDONIAN_CITIES } from "@/lib/constants";
 
-const cities = ["Скопје", "Битола", "Охрид", "Тетово", "Прилеп", "Куманово", "Струмица", "Велес"];
+const cities = [...MACEDONIAN_CITIES].sort((a, b) => a.localeCompare(b));
 
 const tradeTypes = [
   { value: "plumbing", label: "Водовод" },
@@ -40,30 +41,42 @@ export function JobFilters() {
 
   const selectedTrade = searchParams.get("trade");
   const selectedTradeLabel = selectedTrade
-    ? tradeTypes.find((t) => t.value === selectedTrade)?.label ?? null
+    ? (tradeTypes.find((t) => t.value === selectedTrade)?.label ?? null)
     : null;
 
   return (
     <div className="flex gap-2">
-      <Select value={searchParams.get("city") ?? ""} onValueChange={(v) => setFilter("city", v)}>
+      <Select
+        value={searchParams.get("city") ?? ""}
+        onValueChange={(v) => setFilter("city", v)}
+      >
         <SelectTrigger className="w-40">
           <SelectValue placeholder="Град" />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent side="bottom" className="max-h-[380px]">
           <SelectItem value="">Сите градови</SelectItem>
           {cities.map((city) => (
-            <SelectItem key={city} value={city}>{city}</SelectItem>
+            <SelectItem key={city} value={city}>
+              {city}
+            </SelectItem>
           ))}
         </SelectContent>
       </Select>
-      <Select value={selectedTrade ?? ""} onValueChange={(v) => setFilter("trade", v)}>
+      <Select
+        value={selectedTrade ?? ""}
+        onValueChange={(v) => setFilter("trade", v)}
+      >
         <SelectTrigger className="w-44">
-          <SelectValue placeholder="Категорија">{selectedTradeLabel}</SelectValue>
+          <SelectValue placeholder="Категорија">
+            {selectedTradeLabel}
+          </SelectValue>
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="">Сите категории</SelectItem>
           {tradeTypes.map((t) => (
-            <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
+            <SelectItem key={t.value} value={t.value}>
+              {t.label}
+            </SelectItem>
           ))}
         </SelectContent>
       </Select>

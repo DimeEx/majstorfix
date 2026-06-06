@@ -1,6 +1,11 @@
-import { getThumbnailUrl, getLightboxUrl, getOptimizedImageUrl } from "@/lib/supabase/storage";
+import {
+  getThumbnailUrl,
+  getLightboxUrl,
+  getOptimizedImageUrl,
+} from "@/lib/supabase/storage";
 
-const supabaseUrl = "https://tmjooyvpjlinqafchcil.supabase.co/storage/v1/object/public/job-images/test.jpg";
+const supabaseUrl =
+  "https://tmjooyvpjlinqafchcil.supabase.co/storage/v1/object/public/job-images/test.jpg";
 const externalUrl = "https://example.com/image.jpg";
 
 describe("getOptimizedImageUrl", () => {
@@ -9,8 +14,13 @@ describe("getOptimizedImageUrl", () => {
   });
 
   it("adds width and height parameters", () => {
-    const result = getOptimizedImageUrl(supabaseUrl, { width: 400, height: 300 });
-    expect(result).toContain("/storage/v1/render/image/public/job-images/test.jpg");
+    const result = getOptimizedImageUrl(supabaseUrl, {
+      width: 400,
+      height: 300,
+    });
+    expect(result).toContain(
+      "/storage/v1/render/image/public/job-images/test.jpg",
+    );
     expect(result).toContain("width=400");
     expect(result).toContain("height=300");
   });

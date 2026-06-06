@@ -11,7 +11,7 @@ interface ImageGalleryProps {
 }
 
 function Placeholder() {
-  return <div className="absolute inset-0 rounded-lg bg-muted animate-pulse" />;
+  return <div className="bg-muted absolute inset-0 animate-pulse rounded-lg" />;
 }
 
 export function ImageGallery({ images }: ImageGalleryProps) {
@@ -35,18 +35,20 @@ export function ImageGallery({ images }: ImageGalleryProps) {
 
   return (
     <div>
-      <div className="flex items-center gap-1.5 mb-2 text-xs text-muted-foreground">
+      <div className="text-muted-foreground mb-2 flex items-center gap-1.5 text-xs">
         <ImageIcon className="h-3.5 w-3.5" />
-        <span>{images.length} {images.length === 1 ? "слика" : "слики"}</span>
+        <span>
+          {images.length} {images.length === 1 ? "слика" : "слики"}
+        </span>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
         {images.map((url, i) => (
           <button
             key={i}
             type="button"
             onClick={() => openViewer(i)}
-            className="group relative aspect-[4/3] overflow-hidden rounded-lg border border-border/50 bg-muted transition-all hover:ring-2 hover:ring-primary/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            className="group border-border/50 bg-muted hover:ring-primary/40 focus-visible:ring-primary relative aspect-[4/3] overflow-hidden rounded-lg border transition-all hover:ring-2 focus:outline-none focus-visible:ring-2"
           >
             {!loadedThumb[i] && <Placeholder />}
             <img
@@ -66,8 +68,8 @@ export function ImageGallery({ images }: ImageGalleryProps) {
       </div>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-3xl p-0 overflow-hidden bg-black/95 ring-0 sm:max-w-[90vw]">
-          <div className="relative flex items-center justify-center min-h-[50vh] max-h-[85vh]">
+        <DialogContent className="max-w-3xl overflow-hidden bg-black/95 p-0 ring-0 sm:max-w-[90vw]">
+          <div className="relative flex max-h-[85vh] min-h-[50vh] items-center justify-center">
             {images.length > 1 && (
               <>
                 <Button
@@ -110,7 +112,11 @@ export function ImageGallery({ images }: ImageGalleryProps) {
             <DialogClose
               className="absolute top-2 right-2 z-10"
               render={
-                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full bg-white/10 text-white hover:bg-white/20">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 rounded-full bg-white/10 text-white hover:bg-white/20"
+                >
                   <X className="h-4 w-4" />
                 </Button>
               }
