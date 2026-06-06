@@ -282,7 +282,6 @@ majstorfix/
 - **Select dropdown positioning** — Changed `alignItemWithTrigger` from `true` to `false` in `select.tsx` so menu always opens downward
 - **Fixed "Other" → "Друго"** — Passed computed Macedonian label as children to `<SelectValue>` in job-filters, step-general-info, edit-job-form
 - **ThemeProvider fix** — Added `<ThemeProvider>` from `next-themes` to root layout with `suppressHydrationWarning` on `<html>` (fixed Toaster crash)
-- **proxy.ts → middleware.ts** — Renamed to `middleware.ts` and exported as `middleware` function so Next.js actually invokes it
 - **Fixed emailRedirectTo** — Changed from `SUPABASE_URL/auth/confirm` to dynamic origin from `headers()` in signUp server action
 - **Optimized middleware** — Narrowed matcher to only `/post-job/:path*` and `/dashboard/:path*`; replaced `getUser()` with `getSession()` (no network call)
 - **Optimized Navbar** — Replaced `getUser()` with `getSession()` for initial auth state (reads from cookie, no API call)
@@ -290,6 +289,9 @@ majstorfix/
 - **Fixed useActionState wrapping** — Server actions `signIn`/`signUp` now accept `_prev` as first param; forms pass them directly to `useActionState` instead of wrapping in anonymous functions (fixes `pending` state / loading spinner)
 - **Fixed client session sync** — `signIn` returns `accessToken`/`refreshToken`; login form calls `supabase.auth.setSession()` on the browser client to initialize the non-HttpOnly cookie so the Navbar detects the logged-in state
 - **Replaced Realtime with polling** — `useActiveBids` hook now polls `getBidCounts` server action every 30s instead of subscribing to `postgres_changes` on `bids` table (was causing 13,959 `realtime.list_changes` calls = 64% of DB time); migration `00008` removes `bids` from `supabase_realtime` publication
+- **Prettier formatter** — Added `.prettierrc` (semi, double quotes, trailing commas, Tailwind plugin), `.prettierignore`, `eslint-config-prettier` in flat config, and `format`/`format:check` scripts
+- **proxy.ts → middleware.ts** — Renamed back to `proxy.ts` with `proxy` export (Next.js 16 deprecates `middleware.ts`; the old export name was no longer recognized, so auth guard never ran)
+- **Full city list** — Expanded `MACEDONIAN_CITIES` from 36 to 82 entries covering all Macedonian municipal centers; dropdown shows 10-12 items (`max-h-[380px]`) with scroll and opens downward (`side="bottom"`)
 
 ### Test Coverage
 - **22 test files · 128 tests — all passing**
