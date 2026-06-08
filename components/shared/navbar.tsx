@@ -6,7 +6,6 @@ import { useRouter, usePathname } from "next/navigation";
 import { Wrench, LogOut, User, Loader2 } from "lucide-react";
 
 import { createClient } from "@/lib/supabase/client";
-import { Button } from "@/components/ui/button";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 
 export function Navbar() {

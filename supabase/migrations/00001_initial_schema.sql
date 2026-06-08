@@ -80,6 +80,7 @@ ALTER TABLE jobs ADD COLUMN IF NOT EXISTS created_at TIMESTAMP WITH TIME ZONE DE
 CREATE TABLE IF NOT EXISTS bids (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     job_id UUID REFERENCES jobs(id) ON DELETE CASCADE NOT NULL,
+    bidder_id UUID REFERENCES auth.users(id) DEFAULT auth.uid(),
     handyman_phone TEXT NOT NULL,
     price_labor_only INT NOT NULL,
     price_with_materials INT DEFAULT NULL,
@@ -93,12 +94,14 @@ CREATE TABLE IF NOT EXISTS bids (
 -- Ensure ALL bids columns exist
 ALTER TABLE bids ADD COLUMN IF NOT EXISTS price_labor_only_eur INT DEFAULT NULL;
 ALTER TABLE bids ADD COLUMN IF NOT EXISTS price_with_materials_eur INT DEFAULT NULL;
+ALTER TABLE bids ADD COLUMN IF NOT EXISTS bidder_id UUID REFERENCES auth.users(id) DEFAULT auth.uid();
 
 -- Indexes for common queries
 CREATE INDEX IF NOT EXISTS idx_jobs_city ON jobs(city);
 CREATE INDEX IF NOT EXISTS idx_jobs_urgency ON jobs(urgency);
 CREATE INDEX IF NOT EXISTS idx_jobs_created_at ON jobs(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_bids_job_id ON bids(job_id);
+CREATE INDEX IF NOT EXISTS idx_bids_bidder_id ON bids(bidder_id);
 
 -- Row Level Security
 ALTER TABLE jobs ENABLE ROW LEVEL SECURITY;
@@ -122,15 +125,23 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
 END $$;
 
--- Anyone can view bids on a job
+-- Job owners and bidders can view bids on a job
 DO $$ BEGIN
-  CREATE POLICY "Anyone can view bids" ON bids FOR SELECT USING (true);
+  CREATE POLICY "Job owners and bidders can view bids" ON bids FOR SELECT USING (
+    auth.uid() = bidder_id
+    OR EXISTS (
+      SELECT 1 FROM jobs WHERE jobs.id = bids.job_id AND jobs.owner_id = auth.uid()
+    )
+  );
 EXCEPTION WHEN duplicate_object THEN NULL;
 END $$;
 
--- Authenticated users can create bids
+-- Authenticated users can create bids as themselves
 DO $$ BEGIN
-  CREATE POLICY "Authenticated users can create bids" ON bids FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+  CREATE POLICY "Authenticated users can create own bids" ON bids FOR INSERT WITH CHECK (
+    auth.role() = 'authenticated'
+    AND bidder_id = auth.uid()
+  );
 EXCEPTION WHEN duplicate_object THEN NULL;
 END $$;
 
@@ -141,8 +152,8 @@ END $$;
 -- DROP POLICY IF EXISTS "Anyone can view jobs" ON jobs;
 -- DROP POLICY IF EXISTS "Authenticated users can create jobs" ON jobs;
 -- DROP POLICY IF EXISTS "Job owners can update their jobs" ON jobs;
--- DROP POLICY IF EXISTS "Anyone can view bids" ON bids;
--- DROP POLICY IF EXISTS "Authenticated users can create bids" ON bids;
+-- DROP POLICY IF EXISTS "Job owners and bidders can view bids" ON bids;
+-- DROP POLICY IF EXISTS "Authenticated users can create own bids" ON bids;
 -- DROP TABLE IF EXISTS bids;
 -- DROP TABLE IF EXISTS jobs;
 -- DROP TYPE IF EXISTS currency_enum;

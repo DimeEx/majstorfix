@@ -1,8 +1,7 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import {
   stepLogisticsSchema,
   type StepLogistics,
@@ -36,7 +35,7 @@ export function StepLogistics({ onBack, onSubmit }: StepLogisticsProps) {
   const {
     register,
     setValue,
-    watch,
+    control,
     handleSubmit,
     formState: { errors, isValid },
   } = useForm<StepLogistics>({
@@ -51,8 +50,8 @@ export function StepLogistics({ onBack, onSubmit }: StepLogisticsProps) {
     mode: "onChange",
   });
 
-  const completionTime = watch("completion_time");
-  const urgency = watch("urgency");
+  const completionTime = useWatch({ control, name: "completion_time" });
+  const urgency = useWatch({ control, name: "urgency" });
 
   const onFormSubmit = (data: StepLogistics) => {
     onSubmit(data as unknown as Record<string, unknown>);

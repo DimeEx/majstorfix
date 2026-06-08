@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { z } from "zod";
 import { StepGeneralInfo } from "./step-general-info";
 import { StepPropertyTraits } from "./step-property-traits";
 import { StepLogistics } from "./step-logistics";

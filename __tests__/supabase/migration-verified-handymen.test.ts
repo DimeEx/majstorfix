@@ -44,14 +44,9 @@ describe("Database Migration 00005 - Verified Handymen", () => {
 
   it("creates RLS policies", () => {
     expect(sql).toContain(`CREATE POLICY "Anyone can view verified handymen"`);
-    expect(sql).toContain(
-      `CREATE POLICY "Authenticated users can manage verified handymen"`,
-    );
-    expect(sql).toContain(
-      `CREATE POLICY "Authenticated users can update verified handymen"`,
-    );
-    expect(sql).toContain(
-      `CREATE POLICY "Authenticated users can delete verified handymen"`,
-    );
+    expect(sql).toContain("No INSERT/UPDATE/DELETE policies are created");
+    expect(sql).not.toContain("Authenticated users can manage verified handymen");
+    expect(sql).not.toContain("Authenticated users can update verified handymen");
+    expect(sql).not.toContain("Authenticated users can delete verified handymen");
   });
 });

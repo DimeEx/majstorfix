@@ -22,28 +22,12 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
 END $$;
 
--- Only authenticated users can manage (insert/update/delete) — for Supabase dashboard use
-DO $$ BEGIN
-  CREATE POLICY "Authenticated users can manage verified handymen" ON verified_handymen FOR INSERT WITH CHECK (auth.role() = 'authenticated');
-EXCEPTION WHEN duplicate_object THEN NULL;
-END $$;
-
-DO $$ BEGIN
-  CREATE POLICY "Authenticated users can update verified handymen" ON verified_handymen FOR UPDATE USING (auth.role() = 'authenticated');
-EXCEPTION WHEN duplicate_object THEN NULL;
-END $$;
-
-DO $$ BEGIN
-  CREATE POLICY "Authenticated users can delete verified handymen" ON verified_handymen FOR DELETE USING (auth.role() = 'authenticated');
-EXCEPTION WHEN duplicate_object THEN NULL;
-END $$;
+-- No INSERT/UPDATE/DELETE policies are created intentionally.
+-- Supabase service-role/admin clients bypass RLS for verification management.
 
 -- ============================================
 -- DOWN
 -- ============================================
 
--- DROP POLICY IF EXISTS "Authenticated users can delete verified handymen" ON verified_handymen;
--- DROP POLICY IF EXISTS "Authenticated users can update verified handymen" ON verified_handymen;
--- DROP POLICY IF EXISTS "Authenticated users can manage verified handymen" ON verified_handymen;
 -- DROP POLICY IF EXISTS "Anyone can view verified handymen" ON verified_handymen;
 -- DROP TABLE IF EXISTS verified_handymen;

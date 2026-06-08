@@ -1,9 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import {
   Loader2,
   X,
@@ -48,7 +47,7 @@ export function StepGeneralInfo({ onNext }: StepGeneralInfoProps) {
   const {
     register,
     setValue,
-    watch,
+    control,
     handleSubmit,
     formState: { errors, isValid },
   } = useForm<StepGeneralInfo>({
@@ -70,7 +69,7 @@ export function StepGeneralInfo({ onNext }: StepGeneralInfoProps) {
     { value: "other", label: "Друго" },
   ];
 
-  const selectedTradeType = watch("trade_type");
+  const selectedTradeType = useWatch({ control, name: "trade_type" });
   const selectedTradeLabel =
     tradeOptions.find((t) => t.value === selectedTradeType)?.label ?? null;
 
@@ -200,10 +199,11 @@ export function StepGeneralInfo({ onNext }: StepGeneralInfoProps) {
             {files.map((file, i) => (
               <div key={i} className="group relative">
                 <div className="border-border bg-muted/50 text-muted-foreground flex h-16 w-16 items-center justify-center overflow-hidden rounded-lg border text-xs">
-                  <img
-                    src={URL.createObjectURL(file)}
-                    alt={file.name}
-                    className="h-full w-full object-cover"
+                  <div
+                    role="img"
+                    aria-label={file.name}
+                    className="h-full w-full bg-cover bg-center"
+                    style={{ backgroundImage: `url(${URL.createObjectURL(file)})` }}
                   />
                 </div>
                 <button

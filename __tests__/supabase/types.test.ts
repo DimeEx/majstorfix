@@ -65,7 +65,10 @@ describe("Supabase Types", () => {
     const bid: Bid = {
       id: "uuid-bid-1",
       job_id: "uuid-job-1",
+      bidder_id: "uuid-user-1",
       handyman_phone: "+38970123456",
+      price_labor_only_eur: null,
+      price_with_materials_eur: null,
       price_labor_only: 3000,
       price_with_materials: 5000,
       availability_date: "2026-06-10",
@@ -81,7 +84,10 @@ describe("Supabase Types", () => {
     const bid: Bid = {
       id: "uuid-bid-2",
       job_id: "uuid-job-2",
+      bidder_id: null,
       handyman_phone: "+38970123457",
+      price_labor_only_eur: null,
+      price_with_materials_eur: null,
       price_labor_only: 2500,
       price_with_materials: null,
       availability_date: "2026-06-12",
@@ -104,13 +110,21 @@ describe("Supabase Types", () => {
           },
           bids: {
             Row: {} as Bid,
-            Insert: {} as Omit<Bid, "id" | "created_at">,
+            Insert: {} as Database["public"]["Tables"]["bids"]["Insert"],
             Update: {} as Partial<Omit<Bid, "id" | "created_at">>,
             Relationships: [],
           },
         },
         Views: {},
         Functions: {},
+        Enums: {
+          property_enum: "house",
+          material_enum: "negotiable",
+          urgency_enum: "flexible",
+          completion_time_enum: "1-2_hours",
+          currency_enum: "MKD",
+        },
+        CompositeTypes: {},
       },
     };
     expect(db.public.Tables.jobs).toBeDefined();

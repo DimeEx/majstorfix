@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Loader2,
@@ -64,7 +64,7 @@ export function EditJobForm({ job }: EditJobFormProps) {
   const {
     register,
     handleSubmit,
-    watch,
+    control,
     setValue,
     formState: { errors },
   } = useForm<FullJobInput>({
@@ -92,10 +92,10 @@ export function EditJobForm({ job }: EditJobFormProps) {
     mode: "onChange",
   });
 
-  const propertyType = watch("property_type");
-  const completionTime = watch("completion_time");
-  const urgency = watch("urgency");
-  const selectedTradeType = watch("trade_type");
+  const propertyType = useWatch({ control, name: "property_type" });
+  const completionTime = useWatch({ control, name: "completion_time" });
+  const urgency = useWatch({ control, name: "urgency" });
+  const selectedTradeType = useWatch({ control, name: "trade_type" });
 
   const tradeOptions = [
     { value: "plumbing", label: "Водовод" },
@@ -259,10 +259,9 @@ export function EditJobForm({ job }: EditJobFormProps) {
             {existingImages.map((url, i) => (
               <div key={`existing-${i}`} className="group relative">
                 <div className="border-border bg-muted/50 text-muted-foreground flex h-16 w-16 items-center justify-center overflow-hidden rounded-lg border text-xs">
-                  <img
-                    src={url}
-                    alt=""
-                    className="h-full w-full object-cover"
+                  <div
+                    className="h-full w-full bg-cover bg-center"
+                    style={{ backgroundImage: `url(${url})` }}
                   />
                 </div>
                 <button
@@ -277,10 +276,11 @@ export function EditJobForm({ job }: EditJobFormProps) {
             {newFiles.map((file, i) => (
               <div key={`new-${i}`} className="group relative">
                 <div className="border-border bg-muted/50 text-muted-foreground flex h-16 w-16 items-center justify-center overflow-hidden rounded-lg border text-xs">
-                  <img
-                    src={URL.createObjectURL(file)}
-                    alt={file.name}
-                    className="h-full w-full object-cover"
+                  <div
+                    role="img"
+                    aria-label={file.name}
+                    className="h-full w-full bg-cover bg-center"
+                    style={{ backgroundImage: `url(${URL.createObjectURL(file)})` }}
                   />
                 </div>
                 <button

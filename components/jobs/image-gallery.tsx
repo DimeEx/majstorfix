@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { ChevronLeft, ChevronRight, X, ImageIcon } from "lucide-react";
 import { Dialog, DialogContent, DialogClose } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -51,13 +52,13 @@ export function ImageGallery({ images }: ImageGalleryProps) {
             className="group border-border/50 bg-muted hover:ring-primary/40 focus-visible:ring-primary relative aspect-[4/3] overflow-hidden rounded-lg border transition-all hover:ring-2 focus:outline-none focus-visible:ring-2"
           >
             {!loadedThumb[i] && <Placeholder />}
-            <img
+            <Image
               src={getThumbnailUrl(url)}
               alt={`Слика ${i + 1}`}
-              className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-105"
-              loading={i < 3 ? "eager" : "lazy"}
-              decoding="async"
-              fetchPriority={i < 2 ? "high" : "auto"}
+              fill
+              sizes="(min-width: 640px) 33vw, 50vw"
+              className="object-cover transition-transform duration-200 group-hover:scale-105"
+              priority={i < 2}
               onLoad={() => setLoadedThumb((p) => ({ ...p, [i]: true }))}
               onError={() => setLoadedThumb((p) => ({ ...p, [i]: true }))}
               style={loadedThumb[i] ? {} : { opacity: 0.01 }}
@@ -99,12 +100,14 @@ export function ImageGallery({ images }: ImageGalleryProps) {
               </div>
             )}
 
-            <img
+            <Image
+              key={images[currentIndex]}
               src={getLightboxUrl(images[currentIndex])}
               alt={`Слика ${currentIndex + 1}`}
-              className={`max-h-[85vh] w-full object-contain p-4 transition-opacity duration-200 ${lightboxLoaded ? "opacity-100" : "opacity-0"}`}
-              loading="eager"
-              fetchPriority="high"
+              fill
+              sizes="90vw"
+              className={`object-contain p-4 transition-opacity duration-200 ${lightboxLoaded ? "opacity-100" : "opacity-0"}`}
+              priority
               onLoad={() => setLightboxLoaded(true)}
               onError={() => setLightboxLoaded(true)}
             />

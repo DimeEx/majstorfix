@@ -24,7 +24,7 @@ export type TradeType =
   | "construction"
   | "other";
 
-export interface Job {
+export type Job = {
   id: string;
   description: string;
   city: string;
@@ -46,11 +46,12 @@ export interface Job {
   image_urls: string[];
   owner_id: string | null;
   created_at: string;
-}
+};
 
-export interface Bid {
+export type Bid = {
   id: string;
   job_id: string;
+  bidder_id: string | null;
   handyman_phone: string;
   price_labor_only: number;
   price_with_materials: number | null;
@@ -59,14 +60,14 @@ export interface Bid {
   availability_date: string;
   notes: string | null;
   created_at: string;
-}
+};
 
-export interface VerifiedHandyman {
+export type VerifiedHandyman = {
   phone: string;
   created_at: string;
-}
+};
 
-export interface Rating {
+export type Rating = {
   id: string;
   bid_id: string;
   job_id: string;
@@ -75,7 +76,7 @@ export interface Rating {
   rating: number;
   comment: string | null;
   created_at: string;
-}
+};
 
 export type Database = {
   public: {
@@ -88,7 +89,9 @@ export type Database = {
       };
       bids: {
         Row: Bid;
-        Insert: Omit<Bid, "id" | "created_at">;
+        Insert: Omit<Bid, "id" | "created_at" | "bidder_id"> & {
+          bidder_id?: string | null;
+        };
         Update: Partial<Omit<Bid, "id" | "created_at">>;
         Relationships: [];
       };
@@ -107,5 +110,13 @@ export type Database = {
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
+    Enums: {
+      property_enum: PropertyType;
+      material_enum: MaterialStatus;
+      urgency_enum: Urgency;
+      completion_time_enum: CompletionTime;
+      currency_enum: Currency;
+    };
+    CompositeTypes: Record<string, never>;
   };
 };

@@ -53,13 +53,15 @@ describe("ImageGallery", () => {
   it("renders thumbnails with optimized URLs", () => {
     render(<ImageGallery images={images} />);
     const imgs = screen.getAllByRole("img");
-    expect(imgs[0]).toHaveAttribute("src", thumbnailUrl);
+    expect(decodeURIComponent(imgs[0].getAttribute("src") ?? "")).toContain(
+      thumbnailUrl,
+    );
   });
 
-  it("sets loading attribute based on position", () => {
+  it("sets responsive thumbnail sizing metadata", () => {
     render(<ImageGallery images={images} />);
     const imgs = screen.getAllByRole("img");
-    expect(imgs[0]).toHaveAttribute("loading", "eager");
+    expect(imgs[0]).toHaveAttribute("sizes", "(min-width: 640px) 33vw, 50vw");
   });
 
   it("opens dialog when an image is clicked", () => {

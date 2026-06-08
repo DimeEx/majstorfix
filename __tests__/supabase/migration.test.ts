@@ -47,6 +47,7 @@ describe("Database Migration", () => {
   it("creates bids table with required columns", () => {
     expect(sql).toContain("CREATE TABLE IF NOT EXISTS bids");
     expect(sql).toContain("job_id UUID REFERENCES jobs(id) ON DELETE CASCADE");
+    expect(sql).toContain("bidder_id UUID REFERENCES auth.users(id)");
     expect(sql).toContain("handyman_phone TEXT NOT NULL");
     expect(sql).toContain("price_labor_only INT NOT NULL");
     expect(sql).toContain("price_with_materials INT");
@@ -57,6 +58,7 @@ describe("Database Migration", () => {
     expect(sql).toContain("CREATE INDEX IF NOT EXISTS idx_jobs_urgency");
     expect(sql).toContain("CREATE INDEX IF NOT EXISTS idx_jobs_created_at");
     expect(sql).toContain("CREATE INDEX IF NOT EXISTS idx_bids_job_id");
+    expect(sql).toContain("CREATE INDEX IF NOT EXISTS idx_bids_bidder_id");
   });
 
   it("enables Row Level Security", () => {
@@ -69,9 +71,14 @@ describe("Database Migration", () => {
     expect(sql).toContain(
       `CREATE POLICY "Authenticated users can create jobs"`,
     );
-    expect(sql).toContain(`CREATE POLICY "Anyone can view bids"`);
     expect(sql).toContain(
-      `CREATE POLICY "Authenticated users can create bids"`,
+      `CREATE POLICY "Job owners and bidders can view bids"`,
     );
+    expect(sql).toContain("auth.uid() = bidder_id");
+    expect(sql).toContain("jobs.owner_id = auth.uid()");
+    expect(sql).toContain(
+      `CREATE POLICY "Authenticated users can create own bids"`,
+    );
+    expect(sql).toContain("AND bidder_id = auth.uid()");
   });
 });

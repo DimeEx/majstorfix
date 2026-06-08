@@ -1,8 +1,7 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import {
   stepPropertyTraitsSchema,
   type StepPropertyTraits,
@@ -38,7 +37,7 @@ export function StepPropertyTraits({
 }: StepPropertyTraitsProps) {
   const {
     register,
-    watch,
+    control,
     setValue,
     handleSubmit,
     formState: { errors },
@@ -52,7 +51,7 @@ export function StepPropertyTraits({
     mode: "onChange",
   });
 
-  const propertyType = watch("property_type");
+  const propertyType = useWatch({ control, name: "property_type" });
 
   const onSubmit = (data: StepPropertyTraits) => {
     onNext(data);

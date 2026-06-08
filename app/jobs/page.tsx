@@ -3,6 +3,7 @@ import { JobFilters } from "@/components/jobs/job-filters";
 import { JobCard } from "@/components/jobs/job-card";
 import { Briefcase } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { tradeTypeEnum } from "@/lib/validations/job-schema";
 import type { Job } from "@/lib/supabase/types";
 
 export default async function JobsPage({
@@ -83,8 +84,9 @@ async function JobList({ city, trade }: { city?: string; trade?: string }) {
     query = query.eq("city", city);
   }
 
-  if (trade) {
-    query = query.eq("trade_type", trade);
+  const parsedTrade = trade ? tradeTypeEnum.safeParse(trade) : null;
+  if (parsedTrade?.success) {
+    query = query.eq("trade_type", parsedTrade.data);
   }
 
   const { data: jobsRaw } = await query;

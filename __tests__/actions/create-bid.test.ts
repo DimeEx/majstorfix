@@ -104,6 +104,7 @@ describe("createBid", () => {
     expect(result).toEqual({ success: true });
     expect(mockInsert).toHaveBeenCalledWith({
       job_id: validInput.jobId,
+      bidder_id: "test-user",
       handyman_phone: validInput.handyman_phone,
       price_labor_only: validInput.price_labor_only,
       price_with_materials: validInput.price_with_materials,
@@ -147,6 +148,7 @@ describe("createBid", () => {
     expect(result).toEqual({ success: true });
     expect(mockInsert).toHaveBeenCalledWith({
       job_id: validInput.jobId,
+      bidder_id: "test-user",
       handyman_phone: validInput.handyman_phone,
       price_labor_only: validInput.price_labor_only,
       price_with_materials: null,

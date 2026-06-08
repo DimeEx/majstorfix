@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { fullJobSchema, type FullJobInput } from "@/lib/validations/job-schema";
+import type { Database } from "@/lib/supabase/types";
 
 export async function createJob(formData: FullJobInput) {
   const supabase = await createClient();
@@ -17,7 +18,7 @@ export async function createJob(formData: FullJobInput) {
     return { error: "Проверете ги внесените податоци." };
   }
 
-  const { error } = await (supabase.from("jobs") as any).insert({
+  const job: Database["public"]["Tables"]["jobs"]["Insert"] = {
     description: parsed.data.description,
     city: parsed.data.city,
     neighborhood: parsed.data.neighborhood,
@@ -37,7 +38,9 @@ export async function createJob(formData: FullJobInput) {
     budget_max: parsed.data.budget_max,
     image_urls: parsed.data.images ?? [],
     owner_id: userData.user.id,
-  });
+  };
+
+  const { error } = await supabase.from("jobs").insert(job);
 
   if (error) {
     return { error: error.message };

@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { bidSchema } from "@/lib/validations/bid-schema";
+import type { Database } from "@/lib/supabase/types";
 
 interface CreateBidInput {
   jobId: string;
@@ -37,8 +38,9 @@ export async function createBid(input: CreateBidInput) {
     return { error: "Проверете ги внесените податоци." };
   }
 
-  const { error } = await (supabase.from("bids") as any).insert({
+  const bid: Database["public"]["Tables"]["bids"]["Insert"] = {
     job_id: input.jobId,
+    bidder_id: userData.user.id,
     handyman_phone: parsed.data.handyman_phone,
     price_labor_only: parsed.data.price_labor_only,
     price_with_materials: parsed.data.price_with_materials ?? null,
@@ -46,7 +48,9 @@ export async function createBid(input: CreateBidInput) {
     price_with_materials_eur: parsed.data.price_with_materials_eur ?? null,
     availability_date: parsed.data.availability_date,
     notes: parsed.data.notes ?? null,
-  });
+  };
+
+  const { error } = await supabase.from("bids").insert(bid);
 
   if (error) {
     return { error: error.message };

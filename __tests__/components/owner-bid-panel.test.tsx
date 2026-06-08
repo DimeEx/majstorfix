@@ -6,6 +6,7 @@ const mockBids: Bid[] = [
   {
     id: "bid-1",
     job_id: "job-1",
+    bidder_id: "user-1",
     handyman_phone: "+38970123456",
     price_labor_only: 3000,
     price_with_materials: 5000,
@@ -18,6 +19,7 @@ const mockBids: Bid[] = [
   {
     id: "bid-2",
     job_id: "job-1",
+    bidder_id: "user-2",
     handyman_phone: "+38970765432",
     price_labor_only: 2500,
     price_with_materials: null,

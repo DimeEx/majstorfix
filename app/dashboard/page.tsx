@@ -24,7 +24,8 @@ export default async function DashboardPage() {
 
   let initialBidCounts: Record<string, number> = {};
   if (jobIds.length > 0) {
-    const { data: bidsRaw } = await (supabase.from("bids") as any)
+    const { data: bidsRaw } = await supabase
+      .from("bids")
       .select("job_id")
       .in("job_id", jobIds);
 
