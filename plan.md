@@ -210,6 +210,322 @@ When writing or modifying code for this project, you must strictly follow these 
 | Auth | Supabase Auth + @supabase/ssr | latest |
 | Testing | Vitest + Testing Library | 4.1.8 / 16.3 |
 
+## Next Session Priorities For Production Readiness
+
+The current codebase builds, lints, and tests cleanly. The next implementation phase should focus on production hardening rather than basic feature scaffolding.
+
+### 1. Security Hardening
+
+- Fix Supabase RLS on `public.bids`; current advisor warning shows an overly permissive delete policy (`Anyone can delete bids`).
+- Restrict public bucket listing on `job-images`; keep public object access only if intended, but remove unnecessary broad listing access.
+- Revoke public execution of `public.rls_auto_enable()` for `anon` and `authenticated` unless this is explicitly required.
+- Enable leaked password protection in Supabase Auth.
+- Add rate limiting for auth, job posting, and bid submission.
+
+### 2. Trust, Verification, and Moderation
+
+- Define who is allowed to bid in production.
+- Turn `verified_handymen` into a real workflow with admin approval.
+- Add the ability to suspend or block abusive users.
+- Add abuse reporting for jobs and bids.
+- Add basic moderation/admin visibility for reviewing flagged content.
+
+### 3. Job Lifecycle Completion
+
+- Add explicit job states such as `open`, `hired`, `completed`, `cancelled`, and `expired`.
+- Implement accept/reject bid flows.
+- Auto-close expired jobs.
+- Prevent invalid edits/deletes after important state transitions.
+- Add spam/duplicate job protections.
+
+### 4. Notifications
+
+- Notify homeowners when new bids arrive.
+- Notify handymen when bids are accepted or rejected.
+- Verify auth email flows work reliably in production.
+- Start with email delivery; evaluate SMS/Viber later for local-market fit.
+
+### 5. Auth and Account Readiness
+
+- Fully verify registration, confirmation, login, logout, password reset, and session expiry flows.
+- Add profile completeness requirements for both homeowners and handymen.
+- Decide whether phone-first authentication should replace or complement email for the target market.
+
+### 6. Operational Readiness
+
+- Replace the default `README.md` with real project setup and deployment documentation.
+- Add a `.env.example` file.
+- Document required environment variables and Supabase setup steps.
+- Add production monitoring/error reporting (for example Sentry).
+- Add analytics for the key funnel: landing -> register -> post job -> receive bid -> accept bid.
+
+### 7. Test Coverage Expansion
+
+- Keep existing unit/integration coverage.
+- Add end-to-end coverage for the main flows:
+  - register/login
+  - post a job
+  - upload images
+  - submit a bid
+  - dashboard displays incoming bids
+  - edit/delete permissions and authorization boundaries
+- Prefer Playwright for production-flow testing.
+
+### 8. Database and RLS Performance Cleanup
+
+- Add an index for the `jobs.owner_id` foreign key.
+- Update RLS policies to use `(select auth.uid())` style where appropriate to avoid repeated per-row evaluation.
+- Review currently unused indexes later with real production traffic before removing them.
+
+### 9. Admin Tooling
+
+- Add a lightweight admin area or internal tooling for:
+  - managing verified handymen
+  - reviewing flagged jobs/bids
+  - removing abusive content
+  - reviewing uploaded images/storage usage
+
+### 10. Launch Polish
+
+- Add SEO metadata and social preview assets.
+- Add legal pages: privacy policy and terms of service.
+- Add image upload limits/compression rules.
+- Ensure strong empty states and error states on all critical pages.
+
+## Recommended Next Sprint Order
+
+1. Supabase security hardening
+2. Job lifecycle states and bid acceptance
+3. Notifications
+4. Admin/moderation tools
+5. Docs, env examples, and monitoring
+6. End-to-end tests
+
+## Small First Steps For Next Session
+
+Start with small, low-risk tasks and stop before broader bug-fixing or feature implementation.
+
+### Phase 1: Inspection Only
+
+1. Read the current Supabase migrations related to `bids`, storage policies, and helper functions.
+2. Map which existing RLS policies are intentional versus accidental.
+3. Confirm whether `public.rls_auto_enable()` is still needed anywhere in the app.
+4. Check which auth settings are already enabled in the Supabase dashboard.
+
+### Phase 2: Prepare Exact Fix Scope
+
+1. Write down the desired access rules for:
+   - bid creation
+   - bid deletion
+   - public image access
+   - bucket listing
+   - internal helper function execution
+2. List the exact SQL changes needed in a new migration before applying anything.
+3. Identify any app flows that could break if policies become stricter.
+
+### Phase 3: Safe Verification Before Changes
+
+1. Run Supabase advisors again and capture the current warnings as the baseline.
+2. Confirm current app behavior for:
+   - posting a job
+   - submitting a bid
+   - viewing uploaded job images
+3. Only after this baseline is recorded should implementation begin.
+
+### Stop Point
+
+Stop after inspection, scoping, and baseline verification. Do not start the actual migration or policy changes until the next implementation step is explicitly started.
+
+## Scoped Security Fix Spec
+
+This section defines the exact intended access model based on the current app behavior. It is preparation only; no changes should be applied until implementation begins.
+
+### A. Desired Final Access Rules
+
+#### `public.jobs`
+
+- Public read is intentional for the jobs marketplace.
+- Authenticated users can create jobs.
+- Only the job owner can update or delete their own jobs.
+
+#### `public.bids`
+
+- A bid should not be public.
+- Only the bidder who created the bid can read their own bid.
+- Only the owner of the related job can read bids for that job.
+- Only authenticated users can create bids.
+- A created bid must always have `bidder_id = auth.uid()`.
+- No public delete policy should exist.
+- No public update policy should exist.
+- If delete is allowed at all later, it should be limited to the bidder and/or job owner by explicit product decision.
+
+#### `public.verified_handymen`
+
+- Public read is acceptable because the UI only needs to show a verification badge.
+- Regular authenticated users should not be able to insert, update, or delete rows.
+- Writes should be restricted to admin/service-role workflows only.
+
+#### `storage.objects` for bucket `job-images`
+
+- Authenticated users can upload job images.
+- Public object URL access is intended because the app stores and renders public image URLs.
+- Public bucket listing is not needed by the current app.
+- No broad SELECT policy on `storage.objects` should remain if the bucket stays public.
+- Future improvement: consider path ownership rules for update/delete if users must manage only their own uploaded files.
+
+#### `public.rls_auto_enable()`
+
+- The app does not call this function.
+- `anon` should not be able to execute it.
+- `authenticated` should not be able to execute it.
+- Keep it only if it is required for internal DB automation; otherwise consider removing or moving it out of the exposed API surface.
+
+### B. Current App Flows That Depend On These Rules
+
+#### Bids
+
+- `lib/actions/create-bid.ts` inserts bids as the signed-in user and already sends `bidder_id = user.id`.
+- `app/dashboard/page.tsx` reads bid counts for the signed-in owner's jobs.
+- `lib/actions/get-bid-counts.ts` also reads bids only after confirming ownership of the related jobs.
+- `app/jobs/[id]/page.tsx` reads full bids only when the viewer is the job owner.
+- No current app flow updates bids.
+- No current app flow deletes bids.
+
+Conclusion: tightening `bids` read/insert policies should not break intended UI behavior if owners and bidders retain access.
+
+#### Verified Handymen
+
+- `app/jobs/[id]/page.tsx` reads all verified phones to show the verified badge in `OwnerBidPanel`.
+- No app code inserts, updates, or deletes `verified_handymen` rows.
+
+Conclusion: removing authenticated write access should not break the app.
+
+#### Job Images
+
+- `lib/supabase/storage.ts` uploads images and then uses `getPublicUrl()`.
+- `app/jobs/[id]/page.tsx` and gallery components render stored public URLs directly.
+- No app code lists bucket contents.
+
+Conclusion: removing broad public listing access should not break image display.
+
+#### Helper Function Exposure
+
+- No repo code calls `rls_auto_enable()`.
+
+Conclusion: revoking public execute access should not break the application.
+
+### C. Live Drift Confirmed During Inspection
+
+The live database currently contains broader access than intended by the checked-in migrations:
+
+- `public.bids`
+  - `Anyone can view bids`
+  - `Authenticated users can create bids`
+  - `Anyone can delete bids`
+- `public.verified_handymen`
+  - `Authenticated users can manage verified handymen`
+  - `Authenticated users can update verified handymen`
+  - `Authenticated users can delete verified handymen`
+- `storage.objects`
+  - `Anyone can view job images` enables public listing risk according to Supabase advisor
+- `public.rls_auto_enable()`
+  - executable by both `anon` and `authenticated`
+
+### D. Exact Migration Changes To Draft Next
+
+Create one new migration dedicated to security alignment. It should do the following:
+
+1. For `public.bids`
+   - drop `Anyone can view bids` if present
+   - drop `Authenticated users can create bids` if present
+   - drop `Anyone can delete bids` if present
+   - drop and recreate the intended owner/bidder read policy if needed
+   - drop and recreate the intended authenticated self-insert policy if needed
+
+2. For `public.verified_handymen`
+   - drop `Authenticated users can manage verified handymen` if present
+   - drop `Authenticated users can update verified handymen` if present
+   - drop `Authenticated users can delete verified handymen` if present
+   - preserve public read policy only
+
+3. For `storage.objects`
+   - remove the broad public SELECT policy for `job-images` if the public bucket alone is sufficient for rendering stored images
+   - keep authenticated upload policy
+   - verify image rendering still works after removal
+
+4. For `public.rls_auto_enable()`
+   - revoke execute from `anon`
+   - revoke execute from `authenticated`
+   - optionally leave execution to privileged roles only
+
+5. For auth/dashboard follow-up outside SQL migration
+   - enable leaked password protection in the Supabase dashboard/settings
+
+### E. Verification Checklist Before Applying The Migration
+
+Before applying the eventual migration, re-check these flows:
+
+1. Signed-in user can post a job.
+2. Signed-in user can upload job images.
+3. Public/other users can still view job images by URL.
+4. Signed-in handyman can submit a bid.
+5. Job owner can open their job and see incoming bids.
+6. Verified badge still renders for matching phone numbers.
+7. Supabase advisors no longer report:
+   - `Anyone can delete bids`
+   - public execute on `rls_auto_enable()`
+   - public bucket listing on `job-images`
+
+### F. Non-Blocking Notes Found During Scoping
+
+- `delete-job.ts` removes files from storage, but the current storage policy set in migrations only covers upload, not explicit delete permissions. This should be reviewed separately during implementation to confirm whether cleanup works under the current auth model.
+- The app currently uses public image URLs, so moving to private buckets later would require application changes, not only policy changes.
+
+## Security Work Completed (Today)
+
+The first production-hardening step has been partially implemented and verified.
+
+### Completed
+
+- Added and applied `supabase/migrations/00010_align_live_security_policies.sql`.
+- Added and applied `supabase/migrations/00011_revoke_public_rls_auto_enable_execute.sql`.
+- Added migration tests for both new migrations.
+- Fixed live database drift where `public.bids` was missing `bidder_id` and its supporting index.
+- Removed overly permissive live `bids` policies:
+  - `Anyone can view bids`
+  - `Authenticated users can create bids`
+  - `Anyone can delete bids`
+- Restored intended `bids` policies:
+  - only job owners and bidders can read bids
+  - only authenticated users can create bids as themselves
+- Removed authenticated write access from `public.verified_handymen`.
+- Removed the broad public listing policy on `storage.objects` for `job-images`.
+- Revoked execution of `public.rls_auto_enable()` from `PUBLIC`, `anon`, and `authenticated`.
+
+### Verified Results
+
+- Supabase security warnings for these issues are now resolved:
+  - permissive delete access on `public.bids`
+  - public bucket listing on `job-images`
+  - public execution of `public.rls_auto_enable()`
+- Live database now includes `public.bids.bidder_id`.
+- Added migration tests passed locally.
+
+### Remaining Security Follow-Up
+
+- `Leaked Password Protection Disabled` is still reported by Supabase Auth.
+- This must be enabled in the Supabase dashboard/settings; it was not changed through code or migration.
+
+### Suggested Next Step Next Time
+
+1. Enable leaked password protection in Supabase Auth.
+2. Run a quick regression check for:
+   - post job
+   - upload image
+   - submit bid
+   - owner viewing bids
+3. Then continue with the next production-readiness item.
+
 ### Project Structure (Actual)
 ```
 
